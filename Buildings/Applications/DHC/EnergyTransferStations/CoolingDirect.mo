@@ -1,0 +1,74 @@
+within Buildings.Applications.DHC.EnergyTransferStations;
+model CoolingDirect "Direct cooling ETS model for district energy systems"
+  extends Buildings.Applications.DHC.EnergyTransferStations.BaseClasses.PartialCooling(
+      senTDisSup(m_flow_nominal=m1_flow_nominal),
+      senTDisRet(m_flow_nominal=m1_flow_nominal));
+
+ parameter Modelica.SIunits.SpecificHeatCapacity cp=
+   Medium.specificHeatCapacityCp(
+      Medium.setState_pTX(Medium.p_default, Medium.T_default, Medium.X_default))
+    "Default specific heat capacity of medium";
+
+  // mass flow rates
+  parameter Modelica.SIunits.MassFlowRate m1_flow_nominal(min=0,start=0.5)
+    "Nominal mass flow rate";
+
+  // pressure drops
+  parameter Modelica.SIunits.PressureDifference dpSup(displayUnit="Pa")=50
+  "Pressure drop in the ETS supply side (piping, valves, etc.)";
+
+  parameter Modelica.SIunits.PressureDifference dpRet(displayUnit="Pa")=50
+  "Pressure drop in the ETS return side (piping, valves, etc.)";
+
+  Buildings.Fluid.FixedResistances.PressureDrop pipSup(
+    redeclare package Medium = Medium,
+    m_flow_nominal=m1_flow_nominal,
+    dp_nominal=dpSup)
+                   "Supply pipe" annotation (Placement(transformation(
+        extent={{10,-10},{-10,10}},
+        rotation=90,
+        origin={-20,0})));
+  Buildings.Fluid.FixedResistances.PressureDrop pipRet(
+    redeclare package Medium = Medium,
+    m_flow_nominal=m1_flow_nominal,
+    dp_nominal=dpRet)
+                   "Return pipe" annotation (Placement(transformation(
+        extent={{-10,-10},{10,10}},
+        rotation=90,
+        origin={40,0})));
+equation
+  connect(pipSup.port_b, port_b2) annotation (Line(points={{-20,-10},{-20,-60},{
+          -100,-60}}, color={0,127,255}));
+  connect(port_a2, pipRet.port_a)
+    annotation (Line(points={{100,-60},{40,-60},{40,-10}}, color={0,127,255}));
+  connect(pipRet.port_b, senTDisRet.port_a)
+    annotation (Line(points={{40,10},{40,60},{70,60}}, color={0,127,255}));
+  connect(pipSup.port_a, senMasFlo.port_b)
+    annotation (Line(points={{-20,10},{-20,60},{-40,60}}, color={0,127,255}));
+  annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
+        Rectangle(
+          extent={{-100,-56},{100,-64}},
+          fillColor={0,0,0},
+          fillPattern=FillPattern.Solid,
+          pattern=LinePattern.None),
+        Rectangle(
+          extent={{-100,64},{100,56}},
+          fillColor={0,0,0},
+          fillPattern=FillPattern.Solid,
+          pattern=LinePattern.None),
+        Rectangle(
+          extent={{-80,80},{80,-80}},
+          lineColor={175,175,175},
+          fillColor={35,138,255},
+          fillPattern=FillPattern.Solid),
+        Text(
+          extent={{-52,40},{54,-40}},
+          lineColor={0,0,0},
+          fillColor={35,138,255},
+          fillPattern=FillPattern.Solid,
+          textStyle={TextStyle.Bold},
+          textString="ETS")}), Diagram(coordinateSystem(preserveAspectRatio=
+            false)),
+              Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+        coordinateSystem(preserveAspectRatio=false)));
+end CoolingDirect;
