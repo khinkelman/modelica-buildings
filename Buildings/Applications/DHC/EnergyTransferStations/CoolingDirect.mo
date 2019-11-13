@@ -1,6 +1,7 @@
 within Buildings.Applications.DHC.EnergyTransferStations;
-model CoolingDirect "Direct cooling ETS model for district energy systems"
-  extends Buildings.Applications.DHC.EnergyTransferStations.BaseClasses.PartialCooling(
+model CoolingDirect "Direct cooling ETS model for district energy systems without in-building pumping or deltaT control"
+  extends
+    Buildings.Applications.DHC.EnergyTransferStations.BaseClasses.PartialCooling(
       senTDisSup(m_flow_nominal=m1_flow_nominal),
       senTDisRet(m_flow_nominal=m1_flow_nominal));
 
@@ -70,5 +71,27 @@ equation
           textString="ETS")}), Diagram(coordinateSystem(preserveAspectRatio=
             false)),
               Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
-        coordinateSystem(preserveAspectRatio=false)));
+        coordinateSystem(preserveAspectRatio=false)),
+    Documentation(info="<html>
+<p>
+Direct cooling energy transfer station (ETS) model without in-building pumping or deltaT control.
+The design is based on a typical district cooling ETS described in ASHRAE's 
+<a href=\"https://www.ashrae.org/technical-resources/bookstore/district-heating-and-cooling-guides\">
+District Cooling Guide</a>.  
+As shown in the figure below, the district and building piping are hydronically coupled. This direct 
+ETS connections relies on individual thermostatic control valves at each individual in-building 
+terminal unit for control. 
+</p>
+<p align=\"center\">
+<img src=\"modelica://Buildings/Resources/Images/Applications/DHC/EnergyTransferStations/CoolingDirect.PNG\"/>
+</p>
+<h4>Reference</h4>
+<p>
+American Society of Heating, Refrigeration and Air-Conditioning Engineers. (2013). Chapter 5: End User Interface. In <i>District Cooling Guide</i>. 1st Edition. 
+</p>
+</html>", revisions="<html>
+<ul>
+<li>November 15, 2019, by Kathryn Hinkelman:<br>First implementation. </li>
+</ul>
+</html>"));
 end CoolingDirect;
