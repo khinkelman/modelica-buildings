@@ -2,8 +2,7 @@ within Buildings.Applications.DHC.EnergyTransferStations;
 model CoolingDirect "Direct cooling ETS model for district energy systems without in-building pumping or deltaT control"
   extends
     Buildings.Applications.DHC.EnergyTransferStations.BaseClasses.PartialCooling(
-      senTDisSup(m_flow_nominal=m1_flow_nominal),
-      senTDisRet(m_flow_nominal=m1_flow_nominal));
+     indirectCooling=false);
 
  parameter Modelica.SIunits.SpecificHeatCapacity cp=
    Medium.specificHeatCapacityCp(
@@ -15,10 +14,10 @@ model CoolingDirect "Direct cooling ETS model for district energy systems withou
     "Nominal mass flow rate";
 
   // pressure drops
-  parameter Modelica.SIunits.PressureDifference dpSup(displayUnit="Pa")=50
+  parameter Modelica.SIunits.PressureDifference dpSup=50
   "Pressure drop in the ETS supply side (piping, valves, etc.)";
 
-  parameter Modelica.SIunits.PressureDifference dpRet(displayUnit="Pa")=50
+  parameter Modelica.SIunits.PressureDifference dpRet=50
   "Pressure drop in the ETS return side (piping, valves, etc.)";
 
   Buildings.Fluid.FixedResistances.PressureDrop pipSup(
@@ -27,25 +26,25 @@ model CoolingDirect "Direct cooling ETS model for district energy systems withou
     dp_nominal=dpSup)
                    "Supply pipe" annotation (Placement(transformation(
         extent={{10,-10},{-10,10}},
-        rotation=90,
-        origin={-20,0})));
+        rotation=180,
+        origin={10,60})));
   Buildings.Fluid.FixedResistances.PressureDrop pipRet(
     redeclare package Medium = Medium,
     m_flow_nominal=m1_flow_nominal,
     dp_nominal=dpRet)
                    "Return pipe" annotation (Placement(transformation(
-        extent={{-10,-10},{10,10}},
-        rotation=90,
-        origin={40,0})));
+        extent={{10,-10},{-10,10}},
+        rotation=0,
+        origin={10,-60})));
 equation
-  connect(pipSup.port_b, port_b2) annotation (Line(points={{-20,-10},{-20,-60},{
-          -100,-60}}, color={0,127,255}));
-  connect(port_a2, pipRet.port_a)
-    annotation (Line(points={{100,-60},{40,-60},{40,-10}}, color={0,127,255}));
-  connect(pipRet.port_b, senTDisRet.port_a)
-    annotation (Line(points={{40,10},{40,60},{70,60}}, color={0,127,255}));
-  connect(pipSup.port_a, senMasFlo.port_b)
-    annotation (Line(points={{-20,10},{-20,60},{-40,60}}, color={0,127,255}));
+  connect(senMasFlo.port_b, pipSup.port_a)
+    annotation (Line(points={{-40,60},{0,60}}, color={0,127,255}));
+  connect(pipSup.port_b, senTDisRetInd.port_a)
+    annotation (Line(points={{20,60},{70,60}}, color={0,127,255}));
+  connect(senTDisRetDir.port_b, pipRet.port_b)
+    annotation (Line(points={{-70,-60},{0,-60}}, color={0,127,255}));
+  connect(pipRet.port_a, port_a2) annotation (Line(points={{20,-60},{60,-60},{60,
+          -60},{100,-60}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
           extent={{-100,-56},{100,-64}},
@@ -91,7 +90,7 @@ American Society of Heating, Refrigeration and Air-Conditioning Engineers. (2013
 </p>
 </html>", revisions="<html>
 <ul>
-<li>November 15, 2019, by Kathryn Hinkelman:<br>First implementation. </li>
+<li>November 13, 2019, by Kathryn Hinkelman:<br>First implementation. </li>
 </ul>
 </html>"));
 end CoolingDirect;

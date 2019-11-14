@@ -115,7 +115,7 @@ model CoolingIndirect
   Buildings.Fluid.Sensors.TemperatureTwoPort TBuiRet(redeclare package Medium =
         Medium, m_flow_nominal=m2_flow_nominal)
     "Building-side (secondary) return temperature"
-    annotation (Placement(transformation(extent={{-70,-70},{-90,-50}})));
+    annotation (Placement(transformation(extent={{-30,-70},{-50,-50}})));
   Buildings.Fluid.Actuators.Valves.TwoWayQuickOpening val(
     redeclare package Medium = Medium,
     m_flow_nominal=m1_flow_nominal,
@@ -127,17 +127,18 @@ model CoolingIndirect
 equation
 
   connect(port_b2, TBuiRet.port_b)
-    annotation (Line(points={{-100,-60},{-90,-60}}, color={0,127,255}));
+    annotation (Line(points={{-100,-60},{-50,-60}}, color={0,127,255}));
   connect(TBuiRet.T, con.u_m)
-    annotation (Line(points={{-80,-49},{-80,-12}}, color={0,0,127}));
-  connect(TBuiRet.port_a, hex.port_b2) annotation (Line(points={{-70,-60},{0,
+    annotation (Line(points={{-40,-49},{-40,-30},{-80,-30},{-80,-12}},
+                                                   color={0,0,127}));
+  connect(TBuiRet.port_a, hex.port_b2) annotation (Line(points={{-30,-60},{0,
           -60},{0,-6},{20,-6}},
                               color={0,127,255}));
   connect(hex.port_a2, port_a2) annotation (Line(points={{40,-6},{60,-6},{60,
           -60},{100,-60}},
                       color={0,127,255}));
-  connect(hex.port_b1, senTDisRet.port_a) annotation (Line(points={{40,6},{60,6},
-          {60,60},{70,60}}, color={0,127,255}));
+  connect(hex.port_b1, senTDisRetInd.port_a) annotation (Line(points={{40,6},{
+          60,6},{60,60},{70,60}}, color={0,127,255}));
   connect(val.port_b, hex.port_a1) annotation (Line(points={{-10,60},{0,60},{0,
           6},{20,6}},  color={0,127,255}));
   connect(con.y, val.y)

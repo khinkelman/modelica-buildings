@@ -5,6 +5,14 @@ partial model PartialCooling
 
  final package Medium = Buildings.Media.Water;
 
+ parameter Boolean indirectCooling = true
+   "Set to true if energy transfer station is an indirect connection between district and
+   building piping. Else, false indicates that the connection is direct (e.g. the building
+   and district water pipes are hydrolically coupled. ";
+
+ final Modelica.SIunits.Temperature TDisRet
+   "Temperature of distrct return water";
+
  parameter Modelica.SIunits.SpecificHeatCapacity cp=
    Medium.specificHeatCapacityCp(
       Medium.setState_pTX(Medium.p_default, Medium.T_default, Medium.X_default))
@@ -23,18 +31,16 @@ partial model PartialCooling
         rotation=0,
         origin={-80,60})));
 
-  Buildings.Fluid.Sensors.TemperatureTwoPort senTDisRet(
-    redeclare package Medium = Medium,
-    m_flow_nominal=m1_flow_nominal)
-    "District-side (primary) return temperature sensor"
+  Buildings.Fluid.Sensors.TemperatureTwoPort senTDisRetInd(redeclare package
+      Medium = Medium, m_flow_nominal=m1_flow_nominal)
+    "District-side (primary) return temperature sensor -- indirect ETS connection"
     annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={80,60})));
 
   Modelica.Blocks.Sources.RealExpression powCal(y=senMasFlo.m_flow*cp*(
-        senTDisRet.T - senTDisSup.T))
-    "Calculated power demand"
+        TDisRet - senTDisSup.T)) "Calculated power demand"
     annotation (Placement(transformation(extent={{-100,-100},{-20,-80}})));
 
   Modelica.Blocks.Interfaces.RealOutput Q_flow(
@@ -69,11 +75,25 @@ partial model PartialCooling
 
   Fluid.Sensors.MassFlowRate senMasFlo(redeclare package Medium = Medium)
     annotation (Placement(transformation(extent={{-60,50},{-40,70}})));
+  Fluid.Sensors.TemperatureTwoPort senTDisRetDir(redeclare package Medium =
+        Medium, m_flow_nominal=m1_flow_nominal)
+    "District-side (primary) return temperature sensor -- direct ETS connection"
+    annotation (Placement(transformation(
+        extent={{-10,-10},{10,10}},
+        rotation=0,
+        origin={-80,-60})));
 equation
+
+   if indirectCooling then
+     TDisRet = senTDisRetInd.T;
+   else
+     TDisRet = senTDisRetDir.T;
+   end if;
+
   connect(senTDisSup.port_a, port_a1)
     annotation (Line(points={{-90,60},{-100,60}}, color={0,127,255}));
-  connect(port_b1, senTDisRet.port_b) annotation (Line(points={{100,60},{90,60}},
-                            color={0,127,255}));
+  connect(port_b1, senTDisRetInd.port_b)
+    annotation (Line(points={{100,60},{90,60}}, color={0,127,255}));
   connect(powCal.y, Q_flow) annotation (Line(points={{-16,-90},{90,-90},{90,
           -130}},
         color={0,0,127}));
@@ -84,6 +104,8 @@ equation
                       color={0,0,127}));
   connect(senTDisSup.port_b, senMasFlo.port_a)
     annotation (Line(points={{-70,60},{-60,60}}, color={0,127,255}));
+  connect(port_b2, senTDisRetDir.port_a)
+    annotation (Line(points={{-100,-60},{-90,-60}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
             {100,100}}),                                        graphics={
         Rectangle(
