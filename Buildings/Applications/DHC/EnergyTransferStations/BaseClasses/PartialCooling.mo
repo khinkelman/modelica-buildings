@@ -5,7 +5,7 @@ partial model PartialCooling
 
  final package Medium = Buildings.Media.Water;
 
- parameter Boolean indirectCooling = true
+ parameter Boolean indirectCooling
    "Set to true if energy transfer station is an indirect connection between district and
    building piping. Else, false indicates that the connection is direct (e.g. the building
    and district water pipes are hydrolically coupled. ";
