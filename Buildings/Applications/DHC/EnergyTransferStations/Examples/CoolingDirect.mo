@@ -160,8 +160,7 @@ equation
           {44,-10},{4.44089e-16,-10},{4.44089e-16,-40}}, color={0,127,255}));
   connect(coo.port_a2, TBuiRet.port_b) annotation (Line(points={{56,1.77636e-15},
           {56,-10},{100,-10},{100,-40}}, color={0,127,255}));
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-140,
-            -120},{140,120}})),
+  annotation (Icon(coordinateSystem(preserveAspectRatio=false)),
     Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-140,-120},{140,
             120}})),

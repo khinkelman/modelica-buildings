@@ -153,8 +153,8 @@ equation
   connect(tra.y, souDis.T_in) annotation (Line(points={{-30,101},{-30,112},{4,
           112},{4,102}},
                    color={0,0,127}));
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-140,
-            -120},{140,120}})),
+  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,
+            100},{100,-100}})),
     Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-140,-120},{140,
             120}})),

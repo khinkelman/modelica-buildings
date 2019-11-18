@@ -2,7 +2,7 @@ within Buildings.Applications.DHC.EnergyTransferStations;
 model CoolingDirect "Direct cooling ETS model for district energy systems without in-building pumping or deltaT control"
   extends
     Buildings.Applications.DHC.EnergyTransferStations.BaseClasses.PartialCooling(
-      indirectCooling=true);
+      indirectCooling=false);
 
  parameter Modelica.SIunits.SpecificHeatCapacity cp=
    Medium.specificHeatCapacityCp(
