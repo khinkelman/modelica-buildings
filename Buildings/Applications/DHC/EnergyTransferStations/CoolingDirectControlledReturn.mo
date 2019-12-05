@@ -250,7 +250,7 @@ As shown in the figure below, the district and building piping are hydronically 
 on the district return controls the return temperature to the district cooling network.
 </p>
 <p align=\"center\">
-<img src=\"modelica://Buildings/Resources/Images/Applications/DHC/EnergyTransferStations/CoolingDirectControl.PNG\"/>
+<img src=\"modelica://Buildings/Resources/Images/Applications/DHC/EnergyTransferStations/CoolingDirectControlledReturn.PNG\"/>
 </p>
 <h4>Reference</h4>
 <p>

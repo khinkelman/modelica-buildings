@@ -1,5 +1,5 @@
 ﻿// Simulate
-simulateModel("Buildings.Applications.DHC.EnergyTransferStations.Examples.CoolingDirect", tolerance=0.001, stopTime=86400, numberOfIntervals=500, resultFile="CoolingDirect");
+simulateModel("Buildings.Applications.DHC.EnergyTransferStations.Examples.CoolingDirectUncontrolled", tolerance=0.001, stopTime=86400, numberOfIntervals=500, resultFile="CoolingDirectUncontrolled");
 // Plot commands
 removePlots(true);
 createPlot(id=1, 
@@ -7,7 +7,7 @@ createPlot(id=1,
   y={"TDisSup.T", "TDisRet.T", "TBuiSup.T", "TBuiRet.T", "dT.y"}, 
   range={0.0, 24.0, 6.0, 20.0}, 
   grid=true, 
-  filename="CoolingDirect.mat",
+  filename="CoolingDirectUncontrolled.mat",
   colors={{28,108,200}, {238,46,47}, {0,140,72}, {217,67,180}, {244,125,35}}, 
   patterns={LinePattern.Solid, LinePattern.Solid, LinePattern.Solid, LinePattern.Solid, LinePattern.Dash},
   timeUnit="h", 

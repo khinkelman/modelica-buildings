@@ -1,8 +1,8 @@
 within Buildings.Applications.DHC.EnergyTransferStations;
 model CoolingDirectUncontrolled
   "Direct cooling ETS model for district energy systems without in-building pumping or deltaT control"
-  extends Buildings.Fluid.Interfaces.PartialFourPort(redeclare package Medium2
-      = Medium, redeclare package Medium1 = Medium);
+  extends Buildings.Fluid.Interfaces.PartialFourPort(redeclare package Medium2 =
+        Medium, redeclare package Medium1 = Medium);
 
  final package Medium = Buildings.Media.Water;
 
@@ -131,7 +131,7 @@ ETS connections relies on individual thermostatic control valves at each individ
 terminal unit for control. 
 </p>
 <p align=\"center\">
-<img src=\"modelica://Buildings/Resources/Images/Applications/DHC/EnergyTransferStations/CoolingDirect.PNG\"/>
+<img src=\"modelica://Buildings/Resources/Images/Applications/DHC/EnergyTransferStations/CoolingDirectUncontrolled.PNG\"/>
 </p>
 <h4>Reference</h4>
 <p>
