@@ -1,6 +1,6 @@
 within Buildings.Applications.DHC.EnergyTransferStations.Examples;
-model CoolingDirectControl
-  "Example model for direct cooling energy transfer station with in-building pump and deltaT control"
+model CoolingDirectUncontrolled
+  "Example model for the direct cooling energy transfer station with uncontrolled district-building fluid transfer within the ETS"
   extends Modelica.Icons.Example;
 
   package Medium = Buildings.Media.Water;
@@ -16,6 +16,15 @@ model CoolingDirectControl
       Medium.setState_pTX(Medium.p_default, Medium.T_default, Medium.X_default))
     "Default specific heat capacity of medium";
 
+  Buildings.Applications.DHC.EnergyTransferStations.CoolingDirectUncontrolled
+    coo(
+    m1_flow_nominal=m_flow_nominal,
+    dpSup=500,
+    dpRet=500) "Direct cooling energy transfer station" annotation (Placement(
+        transformation(
+        extent={{-10,10},{10,-10}},
+        rotation=-90,
+        origin={50,10})));
   Fluid.Sources.Boundary_pT           souDis(
     redeclare package Medium = Medium,
     p(displayUnit="Pa") = 300000 + 800,
@@ -116,14 +125,6 @@ public
     annotation (Placement(transformation(extent={{-10,-10},{10,10}},
         rotation=90,
         origin={-30,90})));
-  Buildings.Applications.DHC.EnergyTransferStations.CoolingDirectControl coo
-    annotation (Placement(transformation(
-        extent={{-10,10},{10,-10}},
-        rotation=-90,
-        origin={50,10})));
-  Modelica.Blocks.Sources.Constant TMinCHRS(k=273 + 16)
-    "Minimum setpoint temperature for district chilled water return"
-    annotation (Placement(transformation(extent={{-100,20},{-80,40}})));
 equation
   connect(souDis.ports[1], TDisSup.port_a)
     annotation (Line(points={{0,80},{0,60}},     color={0,127,255}));
@@ -153,8 +154,15 @@ equation
   connect(tra.y, souDis.T_in) annotation (Line(points={{-30,101},{-30,112},{4,
           112},{4,102}},
                    color={0,0,127}));
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,
-            100},{100,-100}})),
+  connect(TDisSup.port_b, coo.port_a1) annotation (Line(points={{0,40},{0,30},{
+          44,30},{44,20}}, color={0,127,255}));
+  connect(coo.port_b2, TDisRet.port_a) annotation (Line(points={{56,20},{56,30},
+          {100,30},{100,40}}, color={0,127,255}));
+  connect(coo.port_b1, TBuiSup.port_a) annotation (Line(points={{44,5.32907e-15},
+          {44,-10},{4.44089e-16,-10},{4.44089e-16,-40}}, color={0,127,255}));
+  connect(coo.port_a2, TBuiRet.port_b) annotation (Line(points={{56,1.77636e-15},
+          {56,-10},{100,-10},{100,-40}}, color={0,127,255}));
+  annotation (Icon(coordinateSystem(preserveAspectRatio=false)),
     Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-140,-120},{140,
             120}})),
@@ -176,4 +184,4 @@ modulated proportionally to the instantaneous cooling load with respect to the m
 <li>November 13, 2019, by Kathryn Hinkelman:<br>First implementation. </li>
 </ul>
 </html>"));
-end CoolingDirectControl;
+end CoolingDirectUncontrolled;
