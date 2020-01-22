@@ -83,37 +83,49 @@ equation
   connect(weaDat.weaBus, weaBus)
    annotation (Line(points={{-80,50},{-60,50}},color={255,204,51}));
   connect(onOffCon.y, swi.u2)
-   annotation (Line(points={{1,-190},{18,-190}},color={255,0,255}));
+   annotation (Line(points={{1,-190},{18,-190}},color={255,0,255},
+      pattern=LinePattern.Dash));
   connect(zer.y, swi.u3)
    annotation (Line(points={{1,-220},{8,-220},{8,-198},{18,-198}},
-     color={0,0,127}));
+     color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(m_flow.y, swi.u1)
    annotation (Line(points={{1,-158},{8,-158},{8,-182},{18,-182}},
-     color={0,0,127}));
+     color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(vol.ports[1], pum.port_a)
    annotation (Line(points={{27.3333,-120},{-60,-120},{-60,-50},{-40,-50}},
-      color={0,127,255}));
+      color={0,127,255},
+      thickness=0.5));
   connect(fixHeaFlo.port, vol.heatPort)
-   annotation (Line(points={{-20,-90},{10,-90},{10,-110},{20,-110}},
-     color={191,0,0}));
+   annotation (Line(points={{-20,-90},{20,-90},{20,-110}},
+     color={191,0,0},
+      thickness=0.5));
   connect(vol.heatPort, TVol.port)
    annotation (Line(points={{20,-110},{-80,-110},{-80,-150},{-70,-150}},
-      color={191,0,0}));
+      color={191,0,0},
+      pattern=LinePattern.Dash));
   connect(tow.port_b, vol.ports[2])
    annotation (Line(points={{42,-50},{60,-50},{60,-120},{30,-120}},
-      color={0,127,255}));
+      color={0,127,255},
+      thickness=0.5));
   connect(pum.port_b, tow.port_a)
-   annotation (Line(points={{-20,-50},{22,-50}},color={0,127,255}));
+   annotation (Line(points={{-20,-50},{22,-50}},color={0,127,255},
+      thickness=0.5));
   connect(onOffCon.u, TSwi.y)
-   annotation (Line(points={{-22,-196},{-59,-196}},color={0,0,127}));
+   annotation (Line(points={{-22,-196},{-59,-196}},color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(TVol.T, onOffCon.reference)
    annotation (Line(points={{-50,-150},{-40,-150},{-40,-184},{-22,-184}},
-      color={0,0,127}));
+      color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(swi.y, pum.m_flow_in)
    annotation (Line(points={{41,-190},{70,-190},{70,-240},{-100,-240},
-     {-100,-30},{-30,-30},{-30,-38}},color={0,0,127}));
+     {-100,-30},{-30,-30},{-30,-38}},color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(exp.ports[1], vol.ports[3])
-   annotation (Line(points={{80,-120},{32.6667,-120}},color={0,127,255}));
+   annotation (Line(points={{80,-120},{32.6667,-120}},color={0,127,255},
+      thickness=0.5));
 
   annotation (Diagram(coordinateSystem(preserveAspectRatio=true, extent={{-140,
             -260},{140,100}}),

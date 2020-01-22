@@ -39,19 +39,22 @@ equation
   connect(TSetLea.y, conFan.u_s)
     annotation (Line(
       points={{-39,-10},{-32,-10}},
-      color={0,0,127}));
+      color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(conFan.y, tow.y)
     annotation (Line(
       points={{-8,-10},{6,-10},{6,-42},{20,-42}},
-      color={0,0,127}));
+      color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(tow.TLvg, conFan.u_m)
     annotation (Line(
       points={{43,-56},{54,-56},{54,-32},{-20,-32},{-20,-22}},
-      color={0,0,127}));
+      color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(weaBus.TWetBul, tow.TAir) annotation (Line(
       points={{-60,50},{0,50},{0,-46},{20,-46}},
-      color={255,204,51},
-      thickness=0.5), Text(
+      color={255,204,51}),
+                      Text(
       string="%first",
       index=-1,
       extent={{-6,3},{-6,3}},

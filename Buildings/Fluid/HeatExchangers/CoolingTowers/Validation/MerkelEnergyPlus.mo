@@ -103,25 +103,33 @@ model MerkelEnergyPlus
 equation
   connect(tow.TAir, TAirWB.y)
     annotation (Line(points={{38,-46},{20,-46},{20,10},{-38,10}},
-      color={0,0,127}));
+      color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(souWat.ports[1], tow.port_a)
-    annotation (Line(points={{0,-50},{40,-50}}, color={0,127,255}));
+    annotation (Line(points={{0,-50},{40,-50}}, color={0,127,255},
+      thickness=0.5));
   connect(tow.port_b, sinWat.ports[1])
-    annotation (Line(points={{60,-50},{80,-50}}, color={0,127,255}));
+    annotation (Line(points={{60,-50},{80,-50}}, color={0,127,255},
+      thickness=0.5));
   connect(TEntWat.y, souWat.T_in)
-    annotation (Line(points={{-38,-46},{-22,-46}},color={0,0,127}));
+    annotation (Line(points={{-38,-46},{-22,-46}},color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(datRea.y[2], TAirWB.u)
     annotation (Line(points={{-79,50},{-70,50},{-70,10},{-62,10}},
-      color={0,0,127}));
+      color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(TEntWat.u, datRea.y[3])
     annotation (Line(points={{-62,-46},{-70,-46},{-70,50},{-79,50}},
-       color={0,0,127}));
+       color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(souWat.m_flow_in, datRea.y[5])
     annotation (Line(points={{-22,-42},{-30,-42},{-30,-20},{-70,-20},
-      {-70,50},{-79,50}}, color={0,0,127}));
+      {-70,50},{-79,50}}, color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(tow.y, datRea.y[9])
     annotation (Line(points={{38,-42},{30,-42},{30,50},
-          {-79,50}}, color={0,0,127}));
+          {-79,50}}, color={0,0,127},
+      pattern=LinePattern.Dash));
 
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)),
     Diagram(coordinateSystem(preserveAspectRatio=false,

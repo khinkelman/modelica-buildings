@@ -26,11 +26,11 @@ equation
   connect(T_Vol.port, vol.heatPort) annotation (Line(
       points={{20,-60},{-16,-60},{-16,-10},{-9,-10}},
       color={191,0,0},
-      smooth=Smooth.None));
+      thickness=0.5));
   connect(T_Vol.T, TLvg) annotation (Line(
       points={{40,-60},{110,-60}},
       color={0,0,127},
-      smooth=Smooth.None));
+      pattern=LinePattern.Dash));
 
   annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,
             -100},{100,100}}),

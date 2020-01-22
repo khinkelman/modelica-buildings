@@ -140,15 +140,20 @@ initial equation
 
 equation
   connect(per.y, y) annotation (Line(points={{-22,58},{-40,58},{-40,80},{-120,80}},
-        color={0,0,127}));
+        color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(per.TAir, TAir) annotation (Line(points={{-22,54},{-80,54},{-80,40},{-120,
-          40}}, color={0,0,127}));
+          40}}, color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(per.Q_flow, preHea.Q_flow) annotation (Line(points={{1,50},{12,50},{12,
-          12},{-80,12},{-80,-50},{-40,-50}},   color={0,0,127}));
+          12},{-80,12},{-80,-50},{-40,-50}},   color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(per.m_flow, mWat_flow.y) annotation (Line(points={{-22,42},{-34,42},{-34,
-          29},{-49,29}}, color={0,0,127}));
+          29},{-49,29}}, color={0,0,127},
+      pattern=LinePattern.Dash));
   connect(TWatIn.y, per.TWatIn) annotation (Line(points={{-49,45},{-35.5,45},{-35.5,
-          46},{-22,46}},        color={0,0,127}));
+          46},{-22,46}},        color={0,0,127},
+      pattern=LinePattern.Dash));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Text(
           extent={{-98,100},{-86,84}},

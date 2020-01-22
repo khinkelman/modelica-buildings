@@ -93,13 +93,16 @@ initial algorithm
 equation
   connect(vol.ports[2], port_b) annotation (Line(
       points={{1,0},{100,0}},
-      color={0,127,255}));
+      color={0,127,255},
+      thickness=0.5));
   connect(port_a, preDro.port_a) annotation (Line(
       points={{-100,0},{-90,0},{-90,0},{-80,0},{-80,0},{-60,0}},
-      color={0,127,255}));
+      color={0,127,255},
+      thickness=0.5));
   connect(preDro.port_b, vol.ports[1]) annotation (Line(
       points={{-40,0},{1,0}},
-      color={0,127,255}));
+      color={0,127,255},
+      thickness=0.5));
   annotation (
     Documentation(info="<html>
 <p>
