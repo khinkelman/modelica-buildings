@@ -374,10 +374,10 @@ and deltaT control. The design is based on a typical district cooling ETS
 described in ASHRAE's 
 <a href=\"https://www.ashrae.org/technical-resources/bookstore/district-heating-and-cooling-guides\">
 District Cooling Guide</a>.  
-As shown in the figure below, the district and building piping are hydronically 
-coupled. The control valve ensures that the return temperature to the district 
-cooling network is at or above the minimum specified value. This configuration 
-naturally results in a fluctuating building supply temperature.
+As shown in the figure below, the district fluid flows directly from the district into
+the building distribution system. The control valve ensures that the return temperature 
+to the district cooling network is at or above the minimum specified value. This 
+configuration naturally results in a fluctuating building supply temperature.
 </p>
 <p align=\"center\">
 <img src=\"modelica://Buildings/Resources/Images/Applications/DHC/EnergyTransferStations/CoolingDirectControlledReturn.PNG\" alt=\"DHC.ETS.CoolingDirectControlledReturn\"/>

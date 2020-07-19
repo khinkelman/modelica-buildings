@@ -171,9 +171,9 @@ or deltaT control. The design is based on a typical district cooling ETS
 described in ASHRAE's 
 <a href=\"https://www.ashrae.org/technical-resources/bookstore/district-heating-and-cooling-guides\">
 District Cooling Guide</a>.  
-As shown in the figure below, the district and building piping are hydronically 
-coupled. This direct ETS connection relies on individual thermostatic control 
-valves at each individual in-building terminal unit for control. 
+As shown in the figure below, the district fluid flows directly from the district into
+the building distribution system. This direct ETS connection relies on individual 
+thermostatic control valves at each individual in-building terminal unit for control. 
 </p>
 <p align=\"center\">
 <img src=\"modelica://Buildings/Resources/Images/Applications/DHC/EnergyTransferStations/CoolingDirectUncontrolled.PNG\" alt=\"DHC.ETS.CoolingDirectUncontrolled\"/>
