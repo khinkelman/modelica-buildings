@@ -69,14 +69,6 @@ model CoolingDirectControlledReturn
        controllerType == Modelica.Blocks.Types.SimpleController.PD or
        controllerType == Modelica.Blocks.Types.SimpleController.PID));
 
-  parameter Real yMax(final start=1)=1
-    "Upper limit of output"
-    annotation(Dialog(tab="Controller"));
-
-  parameter Real yMin=0
-    "Lower limit of output"
-    annotation(Dialog(tab="Controller"));
-
   parameter Real wp(final min=0)=1
     "Set-point weight for Proportional block (0..1)"
     annotation(Dialog(tab="Controller"));
@@ -126,11 +118,6 @@ model CoolingDirectControlledReturn
     annotation(Dialog(group="Initialization",
       tab="Controller",
       enable=initType == Modelica.Blocks.Types.InitPID.InitialOutput));
-
-  parameter Boolean reverseAction = true
-    "Set to true for throttling the water flow rate through a cooling 
-      coil controller"
-    annotation(Dialog(tab="Controller"));
 
   // Advanced parameters
   parameter Modelica.Fluid.Types.Dynamics energyDynamics=
@@ -251,7 +238,7 @@ model CoolingDirectControlledReturn
     final wd=wd,
     final Ni=Ni,
     final Nd=Nd,
-    final reverseAction=reverseAction,
+    final reverseAction=true,
     final initType=initType,
     final xi_start=xi_start,
     final xd_start=xd_start,

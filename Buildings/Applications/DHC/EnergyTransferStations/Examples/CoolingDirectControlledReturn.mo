@@ -34,8 +34,6 @@ model CoolingDirectControlledReturn
     controllerType=Modelica.Blocks.Types.SimpleController.PI,
     k=0.5,
     Ti=200,
-    yMax=0,
-    yMin=-1,
     yCon_start=0)
     annotation (Placement(transformation(extent={{-10,-52},{10,-32}})));
 
