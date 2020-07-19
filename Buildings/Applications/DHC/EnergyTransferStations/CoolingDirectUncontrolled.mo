@@ -6,8 +6,7 @@ model CoolingDirectUncontrolled
     redeclare final package Medium1 = Medium,
     redeclare final package Medium2 = Medium,
     final m1_flow_nominal = m_flow_nominal,
-    final m2_flow_nominal = m_flow_nominal,
-    show_T = true);
+    final m2_flow_nominal = m_flow_nominal);
 
  replaceable package Medium =
    Modelica.Media.Interfaces.PartialMedium "Medium in the component";

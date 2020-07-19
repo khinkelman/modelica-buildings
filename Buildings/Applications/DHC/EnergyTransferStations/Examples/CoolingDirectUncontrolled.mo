@@ -18,6 +18,7 @@ model CoolingDirectUncontrolled
     "Default specific heat capacity of medium";
 
   Buildings.Applications.DHC.EnergyTransferStations.CoolingDirectUncontrolled coo(
+    show_T=true,
     redeclare package Medium = Medium,
     m_flow_nominal=m_flow_nominal,
     dpSup=6000,

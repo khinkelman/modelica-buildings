@@ -26,6 +26,7 @@ model CoolingDirectControlledReturn
     annotation (Placement(transformation(extent={{-120,80},{-100,100}})));
 
   Buildings.Applications.DHC.EnergyTransferStations.CoolingDirectControlledReturn coo(
+    show_T=true,
     redeclare package Medium = Medium,
     mDis_flow_nominal=mDis_flow_nominal,
     mBui_flow_nominal=mBui_flow_nominal,
