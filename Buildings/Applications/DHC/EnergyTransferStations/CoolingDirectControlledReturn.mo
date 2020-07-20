@@ -114,9 +114,9 @@ model CoolingDirectControlledReturn
     "Type of energy balance: dynamic (3 initialization options) or steady state"
     annotation(Dialog(tab="Advanced"));
 
-  parameter Modelica.SIunits.PressureDifference[3] dp_nominal=500*{1,-1,1}
-    "Nominal pressure drop in pipe junctions"
-    annotation(Dialog(tab="Advanced"));
+//  parameter Modelica.SIunits.PressureDifference[3] dp_nominal=500*{1,-1,1}
+//    "Nominal pressure drop in pipe junctions"
+//    annotation(Dialog(tab="Advanced"));
 
   Modelica.Blocks.Interfaces.RealInput TSetDisRet
     "Setpoint for the minimum district return temperature"
@@ -154,7 +154,7 @@ model CoolingDirectControlledReturn
     redeclare final package Medium = Medium,
     final energyDynamics=energyDynamics,
     final m_flow_nominal={mDis_flow_nominal,-mBui_flow_nominal,mByp_flow_nominal},
-    final dp_nominal=dp_nominal)
+    dp_nominal={0,0,0})
     "Bypass junction"
     annotation (Placement(transformation(extent={{30,50},{50,70}})));
 
@@ -201,7 +201,7 @@ model CoolingDirectControlledReturn
     redeclare final package Medium = Medium,
     final energyDynamics=energyDynamics,
     final m_flow_nominal={mBui_flow_nominal,-mDis_flow_nominal,-mByp_flow_nominal},
-    final dp_nominal=dp_nominal) "Bypass junction, splitter"
+    dp_nominal={0,0,0})          "Bypass junction, splitter"
     annotation (Placement(transformation(extent={{50,-50},{30,-70}})));
 
   Buildings.Controls.Continuous.PIDHysteresis con(
