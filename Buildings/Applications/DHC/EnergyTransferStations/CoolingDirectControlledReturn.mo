@@ -11,21 +11,10 @@ model CoolingDirectControlledReturn
  replaceable package Medium =
    Modelica.Media.Interfaces.PartialMedium "Medium in the component";
 
-  // mass flow rates
-  parameter Modelica.SIunits.MassFlowRate mDis_flow_nominal(
-    final min=0,
-    final start=0.5)
-    "Nominal mass flow rate of district cooling side";
-
   parameter Modelica.SIunits.MassFlowRate mBui_flow_nominal(
     final min=0,
     final start=0.5)
     "Nominal mass flow rate of building cooling side";
-
-  parameter Modelica.SIunits.MassFlowRate mByp_flow_nominal(
-    final min=0,
-    final start=0.5)
-    "Nominal mass flow rate through the bypass segment";
 
   // pressure drops
   parameter Modelica.SIunits.PressureDifference dpConVal_nominal(
@@ -247,6 +236,12 @@ model CoolingDirectControlledReturn
 
 
 protected
+  parameter Modelica.SIunits.MassFlowRate mDis_flow_nominal= mBui_flow_nominal
+    "Nominal mass flow rate of district cooling side";
+
+  parameter Modelica.SIunits.MassFlowRate mByp_flow_nominal= mBui_flow_nominal
+    "Nominal mass flow rate through the bypass segment";
+
   final parameter Medium.ThermodynamicState sta_default = Medium.setState_pTX(
     T=Medium.T_default,
     p=Medium.p_default,

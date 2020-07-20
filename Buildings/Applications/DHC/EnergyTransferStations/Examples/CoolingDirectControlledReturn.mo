@@ -6,8 +6,8 @@ model CoolingDirectControlledReturn
 
   package Medium = Buildings.Media.Water "Water medium";
 
-  parameter Modelica.SIunits.MassFlowRate mDis_flow_nominal=0.5
-    "Nominal mass flow rate of district cooling supply";
+//  parameter Modelica.SIunits.MassFlowRate mDis_flow_nominal=0.5
+//    "Nominal mass flow rate of district cooling supply";
 
   parameter Modelica.SIunits.HeatFlowRate Q_flow_nominal=18000
     "Nominal cooling load";
@@ -28,9 +28,7 @@ model CoolingDirectControlledReturn
   Buildings.Applications.DHC.EnergyTransferStations.CoolingDirectControlledReturn coo(
     show_T=true,
     redeclare package Medium = Medium,
-    mDis_flow_nominal=mDis_flow_nominal,
     mBui_flow_nominal=mBui_flow_nominal,
-    mByp_flow_nominal=0.01,
     controllerType=Modelica.Blocks.Types.SimpleController.PI,
     k=0.5,
     Ti=200,
