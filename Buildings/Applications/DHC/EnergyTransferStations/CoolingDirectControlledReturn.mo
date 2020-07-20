@@ -154,6 +154,14 @@ model CoolingDirectControlledReturn
     riseTime(displayUnit="s") = 60) "Control valve"
     annotation (Placement(transformation(extent={{20,-50},{0,-70}})));
 
+  Fluid.FixedResistances.CheckValve cheVal(
+    redeclare final package Medium = Medium,
+    allowFlowReversal=false,
+    dpValve_nominal=dpCheVal_nominal,
+    final m_flow_nominal=mByp_flow_nominal) "Check valve (backflow preventer)"
+    annotation (Placement(transformation(
+      extent={{-10,-10},{10,10}},origin={40,10},rotation=90)));
+
   Buildings.Fluid.FixedResistances.Junction jun(
     redeclare final package Medium = Medium,
     final energyDynamics=energyDynamics,
@@ -208,23 +216,6 @@ model CoolingDirectControlledReturn
     final dp_nominal=dp_nominal) "Bypass junction, splitter"
     annotation (Placement(transformation(extent={{50,-50},{30,-70}})));
 
-  Modelica.Fluid.Valves.ValveIncompressible cheVal(
-    redeclare final package Medium = Medium,
-    final allowFlowReversal=false,
-    final dp_nominal=dpCheVal_nominal,
-    final m_flow_nominal=mByp_flow_nominal,
-    final filteredOpening=true,
-    riseTime=60,
-    final checkValve=true)
-    "Check valve (backflow preventer)"
-    annotation (Placement(transformation(extent={{-10,-10},{10,10}},
-        rotation=90,
-        origin={40,0})));
-
-  Modelica.Blocks.Sources.Constant ope(final k=1)
-    "Check valve is always open in the positive flow direction"
-    annotation (Placement(transformation(extent={{0,-10},{20,10}})));
-
   Buildings.Controls.Continuous.PIDHysteresis con(
     final eOn=eOn,
     final eOff=eOff,
@@ -253,6 +244,7 @@ model CoolingDirectControlledReturn
   Modelica.Blocks.Sources.Constant one(final k=1)
     "Shift controller output by one s.t. controller output y(off) = 1 [full open]"
     annotation (Placement(transformation(extent={{-80,-104},{-60,-84}})));
+
 
 protected
   final parameter Medium.ThermodynamicState sta_default = Medium.setState_pTX(
@@ -294,10 +286,6 @@ equation
     annotation (Line(points={{60,-60},{50,-60}}, color={0,127,255}));
   connect(spl.port_2, conVal.port_a)
     annotation (Line(points={{30,-60},{20,-60}}, color={0,127,255}));
-  connect(cheVal.port_b, jun.port_3)
-    annotation (Line(points={{40,10},{40,50}}, color={0,127,255}));
-  connect(ope.y, cheVal.opening)
-    annotation (Line(points={{21,0},{32,0}},   color={0,0,127}));
   connect(TSetDisRet, con.u_s)
     annotation (Line(points={{-120,-120},{-62,-120}}, color={0,0,127}));
   connect(senTBuiRet.T, con.u_m)
@@ -312,10 +300,12 @@ equation
     annotation (Line(points={{1,-100},{10,-100},{10,-72}}, color={0,0,127}));
   connect(senMasFlo.port_b, jun.port_1)
     annotation (Line(points={{-30,60},{30,60}}, color={0,127,255}));
-  connect(spl.port_3, cheVal.port_a)
-    annotation (Line(points={{40,-50},{40,-10}}, color={0,127,255}));
   connect(conVal.port_b, senTDisRet.port_b)
     annotation (Line(points={{0,-60},{-50,-60}}, color={0,127,255}));
+  connect(spl.port_3, cheVal.port_a)
+    annotation (Line(points={{40,-50},{40,0}}, color={0,127,255}));
+  connect(cheVal.port_b, jun.port_3)
+    annotation (Line(points={{40,20},{40,50}}, color={0,127,255}));
   annotation (defaultComponentName="coo",
     Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
