@@ -125,7 +125,7 @@ model CoolingDirectControlledReturn
   Modelica.Blocks.Interfaces.RealOutput Q_flow(
     final quantity="HeatFlowRate",
     final unit="W",
-    displayUnit="kW") "Measured heat flow rate demand at the ETS"
+    displayUnit="kW") "Measured heat flow rate at the ETS"
     annotation (Placement(transformation(extent={{100,140},{120,160}})));
 
   Modelica.Blocks.Interfaces.RealOutput E(

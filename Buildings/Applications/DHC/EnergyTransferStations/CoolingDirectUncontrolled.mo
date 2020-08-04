@@ -28,13 +28,12 @@ model CoolingDirectUncontrolled
   "Pressure drop in the ETS return side";
 
   Modelica.Blocks.Interfaces.RealOutput Q_flow(
-    final quantity="Power",
+    final quantity="HeatFlowRate",
     final unit="W",
-    displayUnit="kW")
-    "Measured power demand at the ETS"
+    displayUnit="kW") "Measured heat flow rate at the ETS"
     annotation (Placement(transformation(extent={{100,140},{120,160}})));
 
-  Modelica.Blocks.Interfaces.RealOutput Q(
+  Modelica.Blocks.Interfaces.RealOutput E(
     final quantity="Energy",
     final unit="J",
     displayUnit="kWh")
@@ -116,7 +115,7 @@ equation
     annotation (Line(points={{-50,-60},{-10,-60}}, color={0,127,255}));
   connect(pipRet.port_a, port_a2)
     annotation (Line(points={{10,-60},{100,-60}}, color={0,127,255}));
-  connect(int.y, Q)
+  connect(int.y,E)
     annotation (Line(points={{91,110},{110,110}}, color={0,0,127}));
   connect(senTDisSup.T, dTDis.u1)
     annotation (Line(points={{-80,71},{-80,122},{-50,122}}, color={0,0,127}));
