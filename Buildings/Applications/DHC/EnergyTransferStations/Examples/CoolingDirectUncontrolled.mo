@@ -6,7 +6,7 @@ model CoolingDirectUncontrolled
 
   package Medium = Buildings.Media.Water "Water medium";
 
-  parameter Modelica.SIunits.HeatFlowRate Q_flow_nominal = 18000
+  parameter Modelica.SIunits.HeatFlowRate Q_flow_nominal = 150000
     "Nominal cooling load";
 
   parameter Modelica.SIunits.MassFlowRate m_flow_nominal=Q_flow_nominal/(cp*(16-7))
@@ -28,7 +28,7 @@ model CoolingDirectUncontrolled
 
   Buildings.Fluid.Sources.Boundary_pT souDis(
     redeclare package Medium = Medium,
-    p(displayUnit="Pa") = 300000 + 800,
+    p(displayUnit="Pa") = 300000 + 100000,
     use_T_in=true,
     T=280.15,
     nPorts=1)
@@ -52,12 +52,12 @@ model CoolingDirectUncontrolled
     show_T=true,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial,
     Q_flow_nominal=-1,
-    dp_nominal=100)
+    dp_nominal=0)
     "Aggregate building cooling load"
     annotation (Placement(transformation(extent={{80,-20},{100,0}})));
 
   Modelica.Blocks.Sources.CombiTimeTable QCoo(
-    table=[0,-10E3; 6,-8E3; 6,-5E3; 12,-2E3; 18,-15E3; 24,-10E3],
+    table=[0,-100E3; 6,-80E3; 6,-50E3; 12,-20E3; 18,-150E3; 24,-100E3],
     timeScale=3600,
     extrapolation=Modelica.Blocks.Types.Extrapolation.Periodic)
     "Cooling demand"
@@ -78,8 +78,9 @@ model CoolingDirectUncontrolled
     redeclare package Medium = Medium,
     allowFlowReversal=false,
     m_flow_nominal=m_flow_nominal,
-    dpValve_nominal=50,
-    riseTime=10)
+    dpValve_nominal=10000,
+    riseTime=10,
+    dpFixed_nominal=100000)
     "In-building terminal control valve"
     annotation (Placement(transformation(extent={{120,-20},{140,0}})));
 
@@ -145,10 +146,12 @@ equation
     Documentation(info="<html>
 <p>
 This model provides an example for the direct cooling energy transfer station 
-model, which does not contain in-building pumping or deltaT control. The 
-ultimate control lies with the thermostatic control valve at the lumped, 
-terminal building load. The control valve is modulated proportionally to the 
-instantaneous cooling load with respect to the maxiumum load.
+model, which does not contain bridged piping nor temperature control. The 
+ultimate control lies with the two-way modulating valve at the lumped, terminal 
+building load. The valve is actuated proportionally to the instantaneous 
+cooling load with respect to the maximum load. This reflects a quasi linear 
+relationship between the opening of an equal-percentage valve and the heat 
+transfer rate across a cooling coil.
 </p>
 </html>", revisions="<html>
 <ul>

@@ -9,7 +9,7 @@ model CoolingDirectControlledReturn
 //  parameter Modelica.SIunits.MassFlowRate mDis_flow_nominal=0.5
 //    "Nominal mass flow rate of district cooling supply";
 
-  parameter Modelica.SIunits.HeatFlowRate Q_flow_nominal=18000
+  parameter Modelica.SIunits.HeatFlowRate Q_flow_nominal=150000
     "Nominal cooling load";
 
   parameter Modelica.SIunits.MassFlowRate mBui_flow_nominal=
@@ -60,7 +60,7 @@ model CoolingDirectControlledReturn
     show_T=true,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial,
     Q_flow_nominal=-1,
-    dp_nominal=100)
+    dp_nominal=100000)
     "Aggregate building cooling load"
     annotation (Placement(transformation(extent={{120,0},{140,20}})));
 
@@ -152,9 +152,9 @@ equation
 <p>
 This model provides an example for the direct cooling energy transfer station 
 model, which contains in-building pumping and controls the district return 
-temperature. The building's primary variable speed pump is modulated depending 
-on the total cooling load and prescribed deltaT. Variation in the district 
-supply temperature is modeled as sinusoidal to test the system's response. 
+temperature. The building's primary variable speed pump is modulated to maintain
+a constant deltaT. Variation in the district supply temperature is modeled as 
+sinusoidal to test the system's response. 
 </p>
 </html>", revisions="<html>
 <ul>
