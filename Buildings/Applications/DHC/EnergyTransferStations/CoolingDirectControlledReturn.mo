@@ -114,6 +114,10 @@ model CoolingDirectControlledReturn
     "Type of energy balance: dynamic (3 initialization options) or steady state"
     annotation(Dialog(tab="Advanced"));
 
+  parameter Modelica.Fluid.Types.Dynamics massDynamics=energyDynamics
+    "Type of mass balance: dynamic (3 initialization options) or steady state"
+    annotation(Dialog(tab="Advanced"));
+
 //  parameter Modelica.SIunits.PressureDifference[3] dp_nominal=500*{1,-1,1}
 //    "Nominal pressure drop in pipe junctions"
 //    annotation(Dialog(tab="Advanced"));
@@ -153,6 +157,7 @@ model CoolingDirectControlledReturn
   Buildings.Fluid.FixedResistances.Junction jun(
     redeclare final package Medium = Medium,
     final energyDynamics=energyDynamics,
+    massDynamics=massDynamics,
     final m_flow_nominal={mDis_flow_nominal,-mBui_flow_nominal,mByp_flow_nominal},
     dp_nominal={0,0,0})
     "Bypass junction"
@@ -200,6 +205,7 @@ model CoolingDirectControlledReturn
   Buildings.Fluid.FixedResistances.Junction spl(
     redeclare final package Medium = Medium,
     final energyDynamics=energyDynamics,
+    massDynamics=massDynamics,
     final m_flow_nominal={mBui_flow_nominal,-mDis_flow_nominal,-mByp_flow_nominal},
     dp_nominal={0,0,0})          "Bypass junction, splitter"
     annotation (Placement(transformation(extent={{50,-50},{30,-70}})));
