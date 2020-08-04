@@ -68,11 +68,11 @@ model CoolingDirectUncontrolled
     duration(displayUnit="h") = 18000,
     startTime(displayUnit="h") = 3600)
     "Ramp load from zero"
-    annotation (Placement(transformation(extent={{-80,40},{-60,60}})));
+    annotation (Placement(transformation(extent={{-80,34},{-60,54}})));
 
   Modelica.Blocks.Math.Product pro
     "Multiplyer to ramp load from zero"
-    annotation (Placement(transformation(extent={{40,46},{60,66}})));
+    annotation (Placement(transformation(extent={{-40,40},{-20,60}})));
 
   Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage val(
     redeclare package Medium = Medium,
@@ -84,15 +84,6 @@ model CoolingDirectUncontrolled
     "In-building terminal control valve"
     annotation (Placement(transformation(extent={{120,-20},{140,0}})));
 
-  Modelica.Blocks.Sources.RealExpression Q_flow_max(
-    y=-Q_flow_nominal)
-    "Maximum Q_flow"
-    annotation (Placement(transformation(extent={{-40,68},{-20,88}})));
-
-  Modelica.Blocks.Math.Division div
-    "Division"
-    annotation (Placement(transformation(extent={{0,74},{20,94}})));
-
   Modelica.Blocks.Sources.Trapezoid tra(
     amplitude=2,
     rising(displayUnit="h") = 10800,
@@ -103,21 +94,18 @@ model CoolingDirectUncontrolled
     "District supply temperature trapezoid signal"
     annotation (Placement(transformation(extent={{-140,-16},{-120,4}})));
 
+  Modelica.Blocks.Math.Gain gain(k=-1/Q_flow_nominal)
+    annotation (Placement(transformation(extent={{80,40},{100,60}})));
 equation
   connect(tra.y, souDis.T_in)
     annotation (Line(points={{-119,-6},{-102,-6}}, color={0,0,127}));
-  connect(QCoo.y[1], div.u1)
-    annotation (Line(points={{-59,90},{-2,90}}, color={0,0,127}));
-  connect(Q_flow_max.y, div.u2)
-    annotation (Line(points={{-19,78},{-2,78}}, color={0,0,127}));
-  connect(div.y, val.y)
-    annotation (Line(points={{21,84},{130,84},{130,2}}, color={0,0,127}));
   connect(QCoo.y[1], pro.u1)
-    annotation (Line(points={{-59,90},{-50,90},{-50,62},{38,62}}, color={0,0,127}));
+    annotation (Line(points={{-59,90},{-50,90},{-50,56},{-42,56}},color={0,0,127}));
   connect(ram.y, pro.u2)
-    annotation (Line(points={{-59,50},{38,50}}, color={0,0,127}));
+    annotation (Line(points={{-59,44},{-42,44}},color={0,0,127}));
   connect(loa.u, pro.y)
-    annotation (Line(points={{78,-4},{70,-4},{70,56},{61,56}},color={0,0,127}));
+    annotation (Line(points={{78,-4},{60,-4},{60,50},{-19,50}},
+                                                              color={0,0,127}));
   connect(loa.port_b, val.port_a)
     annotation (Line(points={{100,-10},{120,-10}}, color={0,127,255}));
   connect(coo.port_a1, souDis.ports[1])
@@ -133,6 +121,10 @@ equation
     annotation (Line(points={{140,-10},{150,-10},{150,-90},{20,-90},{20,-56},
      {10,-56}}, color={0,127,255}));
 
+  connect(pro.y, gain.u)
+    annotation (Line(points={{-19,50},{78,50}}, color={0,0,127}));
+  connect(gain.y, val.y)
+    annotation (Line(points={{101,50},{130,50},{130,2}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)),
     Diagram(coordinateSystem(preserveAspectRatio=false,
       extent={{-160,-120},{160,120}})),
