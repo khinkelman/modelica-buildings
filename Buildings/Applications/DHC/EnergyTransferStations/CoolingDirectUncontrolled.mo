@@ -165,14 +165,13 @@ equation
         Diagram(coordinateSystem(preserveAspectRatio=false)),
     Documentation(info="<html>
 <p>
-Direct cooling energy transfer station (ETS) model without in-building pumping 
-or deltaT control. The design is based on a typical district cooling ETS 
+Direct cooling energy transfer station (ETS) model with no bridge piping 
+nor temperature control. The design is based on a typical district cooling ETS 
 described in ASHRAE's 
 <a href=\"https://www.ashrae.org/technical-resources/bookstore/district-heating-and-cooling-guides\">
 District Cooling Guide</a>.  
 As shown in the figure below, the district fluid flows directly from the district into
-the building distribution system. This direct ETS connection relies on individual 
-thermostatic control valves at each individual in-building terminal unit for control. 
+the building distribution system.  
 </p>
 <p align=\"center\">
 <img src=\"modelica://Buildings/Resources/Images/Applications/DHC/EnergyTransferStations/CoolingDirectUncontrolled.PNG\" alt=\"DHC.ETS.CoolingDirectUncontrolled\"/>

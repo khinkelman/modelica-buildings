@@ -135,8 +135,7 @@ model CoolingDirectControlledReturn
   Modelica.Blocks.Interfaces.RealOutput E(
     final quantity="Energy",
     final unit="J",
-    displayUnit="kWh")
-    "Measured energy consumption at the ETS"
+    displayUnit="kWh") "Measured energy consumption at the ETS"
     annotation (Placement(transformation(extent={{100,100},{120,120}})));
 
   Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage conVal(
