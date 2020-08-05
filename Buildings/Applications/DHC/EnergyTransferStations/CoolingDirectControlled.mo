@@ -1,7 +1,6 @@
 within Buildings.Applications.DHC.EnergyTransferStations;
-model CoolingDirectControlledReturn
-  "Direct cooling ETS model for district energy systems with in-building 
-    pumping and controlled district return temperature"
+model CoolingDirectControlled
+  "Direct cooling ETS model for district energy systems with a bypass pipe and controlled building supply temperature"
   extends Buildings.Fluid.Interfaces.PartialFourPortInterface(
     redeclare final package Medium1 = Medium,
     redeclare final package Medium2 = Medium,
@@ -122,8 +121,8 @@ model CoolingDirectControlledReturn
 //    "Nominal pressure drop in pipe junctions"
 //    annotation(Dialog(tab="Advanced"));
 
-  Modelica.Blocks.Interfaces.RealInput TSetDisRet
-    "Setpoint for the minimum district return temperature"
+  Modelica.Blocks.Interfaces.RealInput TSetBuiSup
+    "Building supply setpoint temperature"
     annotation (Placement(transformation(extent={{-140,-140},{-100,-100}})));
 
   Modelica.Blocks.Interfaces.RealOutput Q_flow(
@@ -179,10 +178,10 @@ model CoolingDirectControlledReturn
     "District return temperature sensor"
     annotation (Placement(transformation(extent={{-70,-70},{-50,-50}})));
 
-  Buildings.Fluid.Sensors.TemperatureTwoPort senTBuiRet(
+  Buildings.Fluid.Sensors.TemperatureTwoPort senTBuiSup(
     redeclare final package Medium = Medium,
     final m_flow_nominal=mBui_flow_nominal)
-    "Building return temperature sensor"
+    "Building supply temperature sensor"
     annotation (Placement(transformation(extent={{80,-70},{60,-50}})));
 
   Modelica.Blocks.Continuous.Integrator int(final k=1)
@@ -209,36 +208,6 @@ model CoolingDirectControlledReturn
     dp_nominal={0,0,0})          "Bypass junction, splitter"
     annotation (Placement(transformation(extent={{50,-50},{30,-70}})));
 
-  Buildings.Controls.Continuous.PIDHysteresis con(
-    final eOn=eOn,
-    final eOff=eOff,
-    final controllerType=controllerType,
-    final k=k,
-    final Ti=Ti,
-    final Td=Td,
-    final yMax=0,
-    final yMin=-1,
-    final wp=wp,
-    final wd=wd,
-    final Ni=Ni,
-    final Nd=Nd,
-    final reverseAction=true,
-    final initType=initType,
-    final xi_start=xi_start,
-    final xd_start=xd_start,
-    final y_start=yCon_start)
-    "District return temperature controller"
-    annotation (Placement(transformation(extent={{-60,-130},{-40,-110}})));
-
-  Modelica.Blocks.Math.Add add
-    "Addition block for controller 'off' state adjustment"
-    annotation (Placement(transformation(extent={{-20,-110},{0,-90}})));
-
-  Modelica.Blocks.Sources.Constant one(final k=1)
-    "Shift controller output by one s.t. controller output y(off) = 1 [full open]"
-    annotation (Placement(transformation(extent={{-80,-104},{-60,-84}})));
-
-
 protected
   parameter Modelica.SIunits.MassFlowRate mDis_flow_nominal= mBui_flow_nominal
     "Nominal mass flow rate of district cooling side";
@@ -259,12 +228,8 @@ equation
     annotation (Line(points={{-100,60},{-90,60}}, color={0,127,255}));
   connect(senTDisSup.port_b, senMasFlo.port_a)
     annotation (Line(points={{-70,60},{-50,60}}, color={0,127,255}));
-  connect(jun.port_2, port_b1)
-    annotation (Line(points={{50,60},{100,60}}, color={0,127,255}));
   connect(senTDisRet.port_a, port_b2)
     annotation (Line(points={{-70,-60},{-100,-60}}, color={0,127,255}));
-  connect(senTBuiRet.port_a, port_a2)
-    annotation (Line(points={{80,-60},{100,-60}}, color={0,127,255}));
   connect(int.y,E)
     annotation (Line(points={{91,110},{110,110}}, color={0,0,127}));
   connect(dTDis.y,pro. u1)
@@ -281,22 +246,8 @@ equation
     annotation (Line(points={{-80,71},{-80,122},{-50,122}}, color={0,0,127}));
   connect(senTDisRet.T, dTDis.u2)
     annotation (Line(points={{-60,-49},{-60,110},{-50,110}}, color={0,0,127}));
-  connect(senTBuiRet.port_b, spl.port_1)
-    annotation (Line(points={{60,-60},{50,-60}}, color={0,127,255}));
   connect(spl.port_2, conVal.port_a)
     annotation (Line(points={{30,-60},{20,-60}}, color={0,127,255}));
-  connect(TSetDisRet, con.u_s)
-    annotation (Line(points={{-120,-120},{-62,-120}}, color={0,0,127}));
-  connect(senTBuiRet.T, con.u_m)
-    annotation (Line(points={{70,-49},{70,-40},{54,-40},{54,-140},{-50,-140},{-50,-132}},
-      color={0,0,127}));
-  connect(one.y, add.u1)
-    annotation (Line(points={{-59,-94},{-22,-94}}, color={0,0,127}));
-  connect(con.y, add.u2)
-    annotation (Line(points={{-39,-120},{-30,-120},{-30,-106},{-22,-106}},
-      color={0,0,127}));
-  connect(add.y, conVal.y)
-    annotation (Line(points={{1,-100},{10,-100},{10,-72}}, color={0,0,127}));
   connect(senMasFlo.port_b, jun.port_1)
     annotation (Line(points={{-30,60},{30,60}}, color={0,127,255}));
   connect(conVal.port_b, senTDisRet.port_b)
@@ -345,18 +296,19 @@ equation
         Diagram(coordinateSystem(preserveAspectRatio=false)),
     Documentation(info="<html>
 <p>
-Direct cooling energy transfer station (ETS) model with in-building pumping 
-and deltaT control. The design is based on a typical district cooling ETS 
-described in ASHRAE's 
+Direct cooling energy transfer station (ETS) model with a bypass pipe 
+and controlled building supply temperature. The design is based on a typical 
+district cooling ETS described in ASHRAE's 
 <a href=\"https://www.ashrae.org/technical-resources/bookstore/district-heating-and-cooling-guides\">
 District Cooling Guide</a>.  
 As shown in the figure below, the district fluid flows directly from the district into
-the building distribution system. The control valve ensures that the return temperature 
-to the district cooling network is at or above the minimum specified value. This 
-configuration naturally results in a fluctuating building supply temperature.
+the building distribution system. The control valve ensures that the supply temperature 
+to the building meets the prescribed setpoint by mixing returned chilled water from the 
+building with the district supply. This configuration naturally results in a fluctuating 
+district return temperature.
 </p>
 <p align=\"center\">
-<img src=\"modelica://Buildings/Resources/Images/Applications/DHC/EnergyTransferStations/CoolingDirectControlledReturn.PNG\" alt=\"DHC.ETS.CoolingDirectControlledReturn\"/>
+<img src=\"modelica://Buildings/Resources/Images/Applications/DHC/EnergyTransferStations/CoolingDirectControlled.PNG\" alt=\"DHC.ETS.CoolingDirectControlled\"/>
 </p>
 <h4>Reference</h4>
 <p>
@@ -368,4 +320,4 @@ American Society of Heating, Refrigeration and Air-Conditioning Engineers.
 <li>December 12, 2019, by Kathryn Hinkelman:<br/>First implementation. </li>
 </ul>
 </html>"));
-end CoolingDirectControlledReturn;
+end CoolingDirectControlled;

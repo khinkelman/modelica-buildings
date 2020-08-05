@@ -1,7 +1,6 @@
 within Buildings.Applications.DHC.EnergyTransferStations.Examples;
-model CoolingDirectControlledReturn
-  "Example model for direct cooling energy transfer station with in-building 
-  pumping and controlled district return temperature"
+model CoolingDirectControlled
+  "Example model for direct cooling energy transfer station with a bypass pipe and controlled builidng supply temperature"
   extends Modelica.Icons.Example;
 
   package Medium = Buildings.Media.Water "Water medium";
@@ -25,7 +24,7 @@ model CoolingDirectControlledReturn
     "System properties and default values"
     annotation (Placement(transformation(extent={{-120,80},{-100,100}})));
 
-  Buildings.Applications.DHC.EnergyTransferStations.CoolingDirectControlledReturn coo(
+  Buildings.Applications.DHC.EnergyTransferStations.CoolingDirectControlled coo(
     show_T=true,
     redeclare package Medium = Medium,
     mBui_flow_nominal=mBui_flow_nominal,
@@ -35,8 +34,8 @@ model CoolingDirectControlledReturn
     yCon_start=0)
     annotation (Placement(transformation(extent={{-10,-52},{10,-32}})));
 
-  Modelica.Blocks.Sources.Constant TSetDisRet_min(k=273.15 + 16)
-    "Minimum setpoint temperature for district return"
+  Modelica.Blocks.Sources.Constant TSetBuiSup(k=273.15 + 7)
+    "Building supply temperature setpont"
     annotation (Placement(transformation(extent={{-100,-64},{-80,-44}})));
 
   Buildings.Fluid.Sources.Boundary_pT sinDis(
@@ -106,7 +105,7 @@ model CoolingDirectControlledReturn
     annotation (Placement(transformation(extent={{-40,40},{-20,60}})));
 
 equation
-  connect(TSetDisRet_min.y, coo.TSetDisRet)
+  connect(TSetBuiSup.y, coo.TSetBuiSup)
     annotation (Line(points={{-79,-54},{-12,-54}}, color={0,0,127}));
   connect(pum.port_b, loa.port_a)
     annotation (Line(points={{100,10},{120,10}}, color={0,127,255}));
@@ -142,7 +141,7 @@ equation
     Diagram(coordinateSystem(preserveAspectRatio=false,
         extent={{-160,-120},{160,120}})),
     __Dymola_Commands(file=
-    "modelica://Buildings/Resources/Scripts/Dymola/Applications/DHC/EnergyTransferStations/Examples/CoolingDirectControlledReturn.mos"
+    "modelica://Buildings/Resources/Scripts/Dymola/Applications/DHC/EnergyTransferStations/Examples/CoolingDirectControlled.mos"
     "Simulate and plot"),
     experiment(
         StartTime=0,
@@ -151,9 +150,9 @@ equation
     Documentation(info="<html>
 <p>
 This model provides an example for the direct cooling energy transfer station 
-model, which contains in-building pumping and controls the district return 
+model, which contains a bypass pipe and controls the building supply 
 temperature. The building's primary variable speed pump is modulated to maintain
-a constant deltaT. Variation in the district supply temperature is modeled as 
+a constant temperature rise. Variation in the district supply temperature is modeled as 
 sinusoidal to test the system's response. 
 </p>
 </html>", revisions="<html>
@@ -161,4 +160,4 @@ sinusoidal to test the system's response.
 <li>December 12, 2019, by Kathryn Hinkelman:<br/>First implementation. </li>
 </ul>
 </html>"));
-end CoolingDirectControlledReturn;
+end CoolingDirectControlled;

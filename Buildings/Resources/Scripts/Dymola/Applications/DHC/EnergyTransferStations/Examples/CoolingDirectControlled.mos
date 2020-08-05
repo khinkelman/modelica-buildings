@@ -1,5 +1,5 @@
 ﻿// Simulate
-simulateModel("Buildings.Applications.DHC.EnergyTransferStations.Examples.CoolingDirectControlledReturn", tolerance=1e-6, stopTime=86400, numberOfIntervals=500, resultFile="CoolingDirectControlledReturn");
+simulateModel("Buildings.Applications.DHC.EnergyTransferStations.Examples.CoolingDirectControlled", tolerance=1e-6, stopTime=86400, numberOfIntervals=500, resultFile="CoolingDirectControlled");
 // Plot commands
 removePlots(true);
 createPlot(id=1, 
@@ -7,7 +7,7 @@ createPlot(id=1,
   y={"coo.sta_a1.T", "coo.sta_b1.T", "coo.sta_a2.T", "coo.sta_b2.T"}, 
   range={0.0, 24.0, 6.0, 18.0}, 
   grid=true, 
-  filename="CoolingDirectControlledReturn.mat",
+  filename="CoolingDirectControlled.mat",
   colors={{28,108,200}, {238,46,47}, {0,140,72}, {217,67,180}}, 
   timeUnit="h", 
   displayUnits={"degC", "degC", "degC", "degC"}); 
