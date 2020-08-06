@@ -30,8 +30,7 @@ model CoolingDirectControlled
     mBui_flow_nominal=mBui_flow_nominal,
     controllerType=Modelica.Blocks.Types.SimpleController.PI,
     k=0.5,
-    Ti=200,
-    yCon_start=0)
+    Ti=200)
     annotation (Placement(transformation(extent={{20,20},{40,40}})));
 
   Modelica.Blocks.Sources.Constant TSetBuiSup(k=273.15 + 7)

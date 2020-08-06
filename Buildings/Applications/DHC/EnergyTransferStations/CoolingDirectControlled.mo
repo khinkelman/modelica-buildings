@@ -27,14 +27,6 @@ model CoolingDirectControlled
     "Nominal pressure drop in the check valve";
 
   // Controller parameters
-  parameter Real eOn=0
-    "If off and control error > eOn, switch to set point tracking"
-    annotation(Dialog(tab="Controller"));
-
-  parameter Real eOff=-0.5
-    "If on and control error < eOff, set y=0"
-    annotation(Dialog(tab="Controller"));
-
   parameter Modelica.Blocks.Types.SimpleController controllerType=
     Modelica.Blocks.Types.SimpleController.PI
     "Type of controller"
@@ -101,12 +93,6 @@ model CoolingDirectControlled
         controllerType == Modelica.Blocks.Types.SimpleController.PD or
         controllerType == Modelica.Blocks.Types.SimpleController.PID));
 
-  parameter Real yCon_start=0
-    "Initial value of output from the controller"
-    annotation(Dialog(group="Initialization",
-      tab="Controller",
-      enable=initType == Modelica.Blocks.Types.InitPID.InitialOutput));
-
   // Advanced parameters
   parameter Modelica.Fluid.Types.Dynamics energyDynamics=
     Modelica.Fluid.Types.Dynamics.FixedInitial
@@ -150,7 +136,7 @@ model CoolingDirectControlled
     dpValve_nominal=dpCheVal_nominal,
     final m_flow_nominal=mByp_flow_nominal) "Check valve (backflow preventer)"
     annotation (Placement(transformation(
-      extent={{10,-10},{-10,10}},origin={2,0})));
+      extent={{10,-10},{-10,10}},origin={2,20})));
 
   Buildings.Fluid.Sensors.MassFlowRate senMasFlo(
     redeclare final package Medium = Medium)
@@ -173,7 +159,7 @@ model CoolingDirectControlled
     redeclare final package Medium = Medium,
     final m_flow_nominal=mBui_flow_nominal)
     "Building supply temperature sensor"
-    annotation (Placement(transformation(extent={{-60,-70},{-80,-50}})));
+    annotation (Placement(transformation(extent={{-40,-70},{-60,-50}})));
 
   Modelica.Blocks.Continuous.Integrator int(final k=1)
     "Integration"
@@ -191,6 +177,22 @@ model CoolingDirectControlled
     "Specific heat multiplier to calculate heat flow rate"
     annotation (Placement(transformation(extent={{30,100},{50,120}})));
 
+  Buildings.Controls.Continuous.LimPID conPID(
+    final controllerType=controllerType,
+    final k=k,
+    final Ti=Ti,
+    final Td=Td,
+    final yMax=1,
+    final yMin=0,
+    final wp=wp,
+    final wd=wd,
+    final Ni=Ni,
+    final Nd=Nd,
+    final initType=initType,
+    final xi_start=xi_start,
+    final xd_start=xd_start,
+    final reverseAction=false)
+    annotation (Placement(transformation(extent={{-60,-30},{-40,-10}})));
 protected
   parameter Modelica.SIunits.MassFlowRate mDis_flow_nominal= mBui_flow_nominal
     "Nominal mass flow rate of district cooling side";
@@ -215,16 +217,16 @@ equation
     annotation (Line(points={{51,110},{68,110}}, color={0,0,127}));
   connect(cp.y,Q_flow)
     annotation (Line(points={{51,110},{60,110},{60,150},{110,150}}, color={0,0,127}));
-  connect(conVal.port_a, port_a2) annotation (Line(points={{30,60},{20,60},{20,
-          -60},{100,-60}}, color={0,127,255}));
+  connect(conVal.port_a, port_a2) annotation (Line(points={{30,60},{20,60},{20,-60},
+          {100,-60}}, color={0,127,255}));
   connect(conVal.port_a, cheVal.port_a) annotation (Line(points={{30,60},{20,60},
-          {20,0},{12,0}}, color={0,127,255}));
-  connect(conVal.port_b, senTDisRet.port_a) annotation (Line(points={{50,60},{
-          54,60},{54,60},{60,60}}, color={0,127,255}));
+          {20,20},{12,20}}, color={0,127,255}));
+  connect(conVal.port_b, senTDisRet.port_a) annotation (Line(points={{50,60},{54,
+          60},{54,60},{60,60}}, color={0,127,255}));
   connect(senTDisRet.port_b, port_b1)
     annotation (Line(points={{80,60},{100,60}}, color={0,127,255}));
   connect(senTBuiSup.port_b, port_b2)
-    annotation (Line(points={{-80,-60},{-100,-60}}, color={0,127,255}));
+    annotation (Line(points={{-60,-60},{-100,-60}}, color={0,127,255}));
   connect(senMasFlo.m_flow, pro.u1)
     annotation (Line(points={{-80,71},{-80,116},{-12,116}}, color={0,0,127}));
   connect(dTDis.y, pro.u2)
@@ -237,10 +239,16 @@ equation
     annotation (Line(points={{-100,60},{-90,60}}, color={0,127,255}));
   connect(senMasFlo.port_b, senTDisSup.port_a)
     annotation (Line(points={{-70,60},{-60,60}}, color={0,127,255}));
-  connect(senTDisSup.port_b, senTBuiSup.port_a) annotation (Line(points={{-40,
-          60},{-20,60},{-20,-60},{-60,-60}}, color={0,127,255}));
-  connect(senTDisSup.port_b, cheVal.port_b) annotation (Line(points={{-40,60},{
-          -20,60},{-20,0},{-8,0}}, color={0,127,255}));
+  connect(senTDisSup.port_b, senTBuiSup.port_a) annotation (Line(points={{-40,60},
+          {-20,60},{-20,-60},{-40,-60}}, color={0,127,255}));
+  connect(senTDisSup.port_b, cheVal.port_b) annotation (Line(points={{-40,60},{-20,
+          60},{-20,20},{-8,20}}, color={0,127,255}));
+  connect(TSetBuiSup, conPID.u_s) annotation (Line(points={{-120,-120},{-80,-120},
+          {-80,-20},{-62,-20}}, color={0,0,127}));
+  connect(senTBuiSup.T, conPID.u_m)
+    annotation (Line(points={{-50,-49},{-50,-32}}, color={0,0,127}));
+  connect(conPID.y, conVal.y)
+    annotation (Line(points={{-39,-20},{40,-20},{40,48}}, color={0,0,127}));
   annotation (defaultComponentName="coo",
     Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
