@@ -30,37 +30,37 @@ model CoolingDirectControlled
     mBui_flow_nominal=mBui_flow_nominal,
     controllerType=Modelica.Blocks.Types.SimpleController.PI,
     k=0.5,
-    Ti=200)
-    annotation (Placement(transformation(extent={{20,20},{40,40}})));
+    Ti=200,
+    initType=Modelica.Blocks.Types.InitPID.InitialOutput)
+    annotation (Placement(transformation(extent={{20,40},{40,60}})));
 
   Modelica.Blocks.Sources.Constant TSetBuiSup(k=273.15 + 7)
     "Building supply temperature setpont"
-    annotation (Placement(transformation(extent={{-100,8},{-80,28}})));
+    annotation (Placement(transformation(extent={{-100,28},{-80,48}})));
 
   Buildings.Fluid.Sources.Boundary_pT sinDis(
     redeclare package Medium = Medium,
     p=300000,
     nPorts=1)
     "District sink"
-    annotation (Placement(transformation(extent={{100,26},{80,46}})));
+    annotation (Placement(transformation(extent={{100,46},{80,66}})));
 
-  Modelica.Blocks.Sources.RealExpression TDisSupNoi(
-    y=(273.15 + 7) + 2*sin(time*4*3.14/86400))
+  Modelica.Blocks.Sources.RealExpression TDisSupNoi(y=(273.15 + 7) + 2*sin(time
+        *4*3.14/86400))
     "Sinusoidal noise signal for district supply temperature"
-    annotation (Placement(transformation(extent={{-100,30},{-80,50}})));
+    annotation (Placement(transformation(extent={{-100,50},{-80,70}})));
 
   Buildings.Fluid.HeatExchangers.HeaterCooler_u loa(
     redeclare package Medium = Medium,
-    allowFlowReversal=false,
     m_flow_nominal=mBui_flow_nominal,
     from_dp=false,
     linearizeFlowResistance=true,
     show_T=true,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial,
     Q_flow_nominal=-1,
-    dp_nominal=100000)
+    dp_nominal(displayUnit="bar") = 100000)
     "Aggregate building cooling load"
-    annotation (Placement(transformation(extent={{40,0},{60,-20}})));
+    annotation (Placement(transformation(extent={{40,20},{60,0}})));
 
   Buildings.Fluid.Movers.FlowControlled_m_flow pum(
     redeclare replaceable package Medium = Medium,
@@ -70,11 +70,11 @@ model CoolingDirectControlled
     nominalValuesDefineDefaultPressureCurve=true,
     constantMassFlowRate=mBui_flow_nominal)
     "Building primary pump"
-    annotation (Placement(transformation(extent={{0,0},{20,-20}})));
+    annotation (Placement(transformation(extent={{0,20},{20,0}})));
 
   Modelica.Blocks.Math.Gain gai(k=-1/(cp*(16-7)))
     "Multiplier gain for calculating m_flow"
-    annotation (Placement(transformation(extent={{0,-100},{20,-80}})));
+    annotation (Placement(transformation(extent={{-20,-40},{0,-20}})));
 
   Modelica.Blocks.Sources.Ramp ram(
     height=1,
@@ -90,11 +90,10 @@ model CoolingDirectControlled
   Buildings.Fluid.Sources.Boundary_pT souDis(
     redeclare package Medium = Medium,
     p=350000,
-    use_T_in=true,
-    T=280.15,
+    T(displayUnit="degC") = 280.15,
     nPorts=1)
     "District source"
-    annotation (Placement(transformation(extent={{-40,26},{-20,46}})));
+    annotation (Placement(transformation(extent={{-40,46},{-20,66}})));
 
   Modelica.Blocks.Sources.CombiTimeTable QCoo(
     table=[0,-100E3; 6,-80E3; 6,-50E3; 12,-20E3; 18,-150E3; 24,-100E3],
@@ -105,9 +104,9 @@ model CoolingDirectControlled
 
 equation
   connect(TSetBuiSup.y, coo.TSetBuiSup)
-    annotation (Line(points={{-79,18},{18,18}},    color={0,0,127}));
+    annotation (Line(points={{-79,38},{18,38}},    color={0,0,127}));
   connect(pum.port_b, loa.port_a)
-    annotation (Line(points={{20,-10},{40,-10}}, color={0,127,255}));
+    annotation (Line(points={{20,10},{40,10}},   color={0,127,255}));
   connect(ram.y, pro.u1)
     annotation (Line(points={{-79,-50},{-62,-50}},
                                                 color={0,0,127}));
@@ -115,23 +114,21 @@ equation
     annotation (Line(points={{-79,-90},{-70,-90},{-70,-62},{-62,-62}},
       color={0,0,127}));
   connect(pro.y, gai.u)
-    annotation (Line(points={{-39,-56},{-10,-56},{-10,-90},{-2,-90}},
+    annotation (Line(points={{-39,-56},{-30,-56},{-30,-30},{-22,-30}},
       color={0,0,127}));
-  connect(TDisSupNoi.y, souDis.T_in)
-    annotation (Line(points={{-79,40},{-42,40}},   color={0,0,127}));
 
   connect(souDis.ports[1], coo.port_a1)
-    annotation (Line(points={{-20,36},{20,36}}, color={0,127,255}));
-  connect(coo.port_b2, pum.port_a) annotation (Line(points={{20,24},{-10,24},{
-          -10,-10},{0,-10}}, color={0,127,255}));
-  connect(loa.port_b, coo.port_a2) annotation (Line(points={{60,-10},{70,-10},{
-          70,24},{40,24}}, color={0,127,255}));
+    annotation (Line(points={{-20,56},{20,56}}, color={0,127,255}));
+  connect(coo.port_b2, pum.port_a) annotation (Line(points={{20,44},{-10,44},{
+          -10,10},{0,10}},   color={0,127,255}));
+  connect(loa.port_b, coo.port_a2) annotation (Line(points={{60,10},{70,10},{70,
+          44},{40,44}},    color={0,127,255}));
   connect(coo.port_b1, sinDis.ports[1])
-    annotation (Line(points={{40,36},{80,36}}, color={0,127,255}));
-  connect(pro.y, pum.m_flow_in)
-    annotation (Line(points={{-39,-56},{10,-56},{10,-22}}, color={0,0,127}));
-  connect(gai.y, loa.u) annotation (Line(points={{21,-90},{30,-90},{30,-16},{38,
-          -16}}, color={0,0,127}));
+    annotation (Line(points={{40,56},{80,56}}, color={0,127,255}));
+  connect(gai.y, pum.m_flow_in) annotation (Line(points={{1,-30},{10,-30},{10,
+          -2},{10,-2}}, color={0,0,127}));
+  connect(pro.y, loa.u) annotation (Line(points={{-39,-56},{30,-56},{30,4},{38,
+          4}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-120,
             -120},{120,120}})),
     Diagram(coordinateSystem(preserveAspectRatio=false,

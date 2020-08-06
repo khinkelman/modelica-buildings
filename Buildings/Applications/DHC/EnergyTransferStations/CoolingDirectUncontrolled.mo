@@ -6,7 +6,8 @@ model CoolingDirectUncontrolled
     redeclare final package Medium1 = Medium,
     redeclare final package Medium2 = Medium,
     final m1_flow_nominal = m_flow_nominal,
-    final m2_flow_nominal = m_flow_nominal);
+    final m2_flow_nominal = m_flow_nominal,
+    final allowFlowReversal2 = allowFlowReversal1);
 
  replaceable package Medium =
    Modelica.Media.Interfaces.PartialMedium "Medium in the component";
@@ -42,7 +43,7 @@ model CoolingDirectUncontrolled
 
   Buildings.Fluid.FixedResistances.PressureDrop pipSup(
     redeclare final package Medium = Medium,
-    final allowFlowReversal=false,
+    final allowFlowReversal=allowFlowReversal1,
     final m_flow_nominal=m_flow_nominal,
     final dp_nominal=dpSup)
     "Supply pipe"
@@ -50,25 +51,28 @@ model CoolingDirectUncontrolled
 
   Buildings.Fluid.FixedResistances.PressureDrop pipRet(
     redeclare final package Medium = Medium,
-    final allowFlowReversal=false,
+    final allowFlowReversal=allowFlowReversal1,
     final m_flow_nominal=m_flow_nominal,
     final dp_nominal=dpRet)
     "Return pipe"
     annotation (Placement(transformation(extent={{80,-70},{60,-50}})));
 
   Buildings.Fluid.Sensors.MassFlowRate senMasFlo(
-    redeclare final package Medium = Medium)
+    redeclare final package Medium = Medium,
+    final allowFlowReversal=allowFlowReversal1)
     "District supply mass flow rate sensor"
     annotation (Placement(transformation(extent={{-90,50},{-70,70}})));
 
   Buildings.Fluid.Sensors.TemperatureTwoPort senTDisSup(
     redeclare final package Medium = Medium,
+    final allowFlowReversal=allowFlowReversal1,
     final m_flow_nominal=m_flow_nominal)
     "District supply temperature sensor"
     annotation (Placement(transformation(extent={{-60,50},{-40,70}})));
 
   Buildings.Fluid.Sensors.TemperatureTwoPort senTDisRet(
     redeclare final package Medium = Medium,
+    final allowFlowReversal=allowFlowReversal1,
     final m_flow_nominal=m_flow_nominal)
     "District return temperature sensor"
     annotation (Placement(transformation(extent={{60,50},{80,70}})));

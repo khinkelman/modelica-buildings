@@ -93,6 +93,11 @@ model CoolingDirectControlled
         controllerType == Modelica.Blocks.Types.SimpleController.PD or
         controllerType == Modelica.Blocks.Types.SimpleController.PID));
 
+  parameter Real y_start=1 "Initial value of output"
+    annotation(Dialog(group="Initialization",
+      tab="Controller", enable=
+        initType == Modelica.Blocks.Types.InitPID.InitialOutput));
+
   // Advanced parameters
   parameter Modelica.Fluid.Types.Dynamics energyDynamics=
     Modelica.Fluid.Types.Dynamics.FixedInitial
@@ -106,6 +111,12 @@ model CoolingDirectControlled
 //  parameter Modelica.SIunits.PressureDifference[3] dp_nominal=500*{1,-1,1}
 //    "Nominal pressure drop in pipe junctions"
 //    annotation(Dialog(tab="Advanced"));
+
+  // Time constants
+  final parameter Modelica.SIunits.Time tau1= if allowFlowReversal1 then 1 else 0
+    "Time constant at nominal flow rate (district side)";
+  final parameter Modelica.SIunits.Time tau2= if allowFlowReversal2 then 1 else 0
+    "Time constant at nominal flow rate (building side)";
 
   Modelica.Blocks.Interfaces.RealInput TSetBuiSup
     "Building supply setpoint temperature"
@@ -125,6 +136,7 @@ model CoolingDirectControlled
 
   Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage conVal(
     redeclare final package Medium = Medium,
+    final allowFlowReversal=allowFlowReversal1,
     final m_flow_nominal=mDis_flow_nominal,
     final dpValve_nominal=dpConVal_nominal,
     riseTime(displayUnit="s") = 60) "Control valve"
@@ -132,32 +144,39 @@ model CoolingDirectControlled
 
   Fluid.FixedResistances.CheckValve cheVal(
     redeclare final package Medium = Medium,
-    allowFlowReversal=false,
-    dpValve_nominal=dpCheVal_nominal,
+    final allowFlowReversal=false,
+    final dpValve_nominal=dpCheVal_nominal,
     final m_flow_nominal=mByp_flow_nominal) "Check valve (backflow preventer)"
     annotation (Placement(transformation(
       extent={{10,-10},{-10,10}},origin={2,20})));
 
   Buildings.Fluid.Sensors.MassFlowRate senMasFlo(
-    redeclare final package Medium = Medium)
+    redeclare final package Medium = Medium,
+    final allowFlowReversal=allowFlowReversal1)
     "District supply mass flow rate sensor"
     annotation (Placement(transformation(extent={{-90,50},{-70,70}})));
 
   Buildings.Fluid.Sensors.TemperatureTwoPort senTDisSup(
     redeclare final package Medium = Medium,
-    final m_flow_nominal=mDis_flow_nominal)
+    final allowFlowReversal=allowFlowReversal1,
+    final m_flow_nominal=mDis_flow_nominal,
+    final tau=tau1)
     "District supply temperature sensor"
     annotation (Placement(transformation(extent={{-60,50},{-40,70}})));
 
   Buildings.Fluid.Sensors.TemperatureTwoPort senTDisRet(
     redeclare final package Medium = Medium,
-    final m_flow_nominal=mDis_flow_nominal)
+    final allowFlowReversal=allowFlowReversal1,
+    final m_flow_nominal=mDis_flow_nominal,
+    final tau=tau1)
     "District return temperature sensor"
     annotation (Placement(transformation(extent={{60,50},{80,70}})));
 
   Buildings.Fluid.Sensors.TemperatureTwoPort senTBuiSup(
     redeclare final package Medium = Medium,
-    final m_flow_nominal=mBui_flow_nominal)
+    final allowFlowReversal=allowFlowReversal2,
+    final m_flow_nominal=mBui_flow_nominal,
+    final tau=tau2)
     "Building supply temperature sensor"
     annotation (Placement(transformation(extent={{-40,-70},{-60,-50}})));
 
@@ -191,6 +210,7 @@ model CoolingDirectControlled
     final initType=initType,
     final xi_start=xi_start,
     final xd_start=xd_start,
+    final y_start=y_start,
     final reverseAction=false)
     annotation (Placement(transformation(extent={{-60,-30},{-40,-10}})));
 protected
