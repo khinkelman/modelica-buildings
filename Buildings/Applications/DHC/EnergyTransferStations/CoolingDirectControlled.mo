@@ -142,7 +142,7 @@ model CoolingDirectControlled
     final m_flow_nominal=mDis_flow_nominal,
     final dpValve_nominal=dpConVal_nominal,
     riseTime(displayUnit="s") = 60) "Control valve"
-    annotation (Placement(transformation(extent={{20,-50},{0,-70}})));
+    annotation (Placement(transformation(extent={{30,70},{50,50}})));
 
   Fluid.FixedResistances.CheckValve cheVal(
     redeclare final package Medium = Medium,
@@ -150,47 +150,38 @@ model CoolingDirectControlled
     dpValve_nominal=dpCheVal_nominal,
     final m_flow_nominal=mByp_flow_nominal) "Check valve (backflow preventer)"
     annotation (Placement(transformation(
-      extent={{-10,-10},{10,10}},origin={40,10},rotation=90)));
-
-  Buildings.Fluid.FixedResistances.Junction jun(
-    redeclare final package Medium = Medium,
-    final energyDynamics=energyDynamics,
-    massDynamics=massDynamics,
-    final m_flow_nominal={mDis_flow_nominal,-mBui_flow_nominal,mByp_flow_nominal},
-    dp_nominal={0,0,0})
-    "Bypass junction"
-    annotation (Placement(transformation(extent={{30,50},{50,70}})));
+      extent={{10,-10},{-10,10}},origin={2,0})));
 
   Buildings.Fluid.Sensors.MassFlowRate senMasFlo(
     redeclare final package Medium = Medium)
     "District supply mass flow rate sensor"
-    annotation (Placement(transformation(extent={{-50,50},{-30,70}})));
+    annotation (Placement(transformation(extent={{-90,50},{-70,70}})));
 
   Buildings.Fluid.Sensors.TemperatureTwoPort senTDisSup(
     redeclare final package Medium = Medium,
     final m_flow_nominal=mDis_flow_nominal)
     "District supply temperature sensor"
-    annotation (Placement(transformation(extent={{-90,50},{-70,70}})));
+    annotation (Placement(transformation(extent={{-60,50},{-40,70}})));
 
   Buildings.Fluid.Sensors.TemperatureTwoPort senTDisRet(
     redeclare final package Medium = Medium,
     final m_flow_nominal=mDis_flow_nominal)
     "District return temperature sensor"
-    annotation (Placement(transformation(extent={{-70,-70},{-50,-50}})));
+    annotation (Placement(transformation(extent={{60,50},{80,70}})));
 
   Buildings.Fluid.Sensors.TemperatureTwoPort senTBuiSup(
     redeclare final package Medium = Medium,
     final m_flow_nominal=mBui_flow_nominal)
     "Building supply temperature sensor"
-    annotation (Placement(transformation(extent={{80,-70},{60,-50}})));
+    annotation (Placement(transformation(extent={{-60,-70},{-80,-50}})));
 
   Modelica.Blocks.Continuous.Integrator int(final k=1)
     "Integration"
     annotation (Placement(transformation(extent={{70,100},{90,120}})));
 
-  Modelica.Blocks.Math.Add dTDis(final k1=-1,final k2=+1)
+  Modelica.Blocks.Math.Add dTDis(final k1=+1, final k2=-1)
     "Temperature difference on the district side"
-    annotation (Placement(transformation(extent={{-48,106},{-28,126}})));
+    annotation (Placement(transformation(extent={{-40,114},{-20,94}})));
 
   Modelica.Blocks.Math.Product pro
     "Product"
@@ -199,14 +190,6 @@ model CoolingDirectControlled
   Modelica.Blocks.Math.Gain cp(final k=cp_default)
     "Specific heat multiplier to calculate heat flow rate"
     annotation (Placement(transformation(extent={{30,100},{50,120}})));
-
-  Buildings.Fluid.FixedResistances.Junction spl(
-    redeclare final package Medium = Medium,
-    final energyDynamics=energyDynamics,
-    massDynamics=massDynamics,
-    final m_flow_nominal={mBui_flow_nominal,-mDis_flow_nominal,-mByp_flow_nominal},
-    dp_nominal={0,0,0})          "Bypass junction, splitter"
-    annotation (Placement(transformation(extent={{50,-50},{30,-70}})));
 
 protected
   parameter Modelica.SIunits.MassFlowRate mDis_flow_nominal= mBui_flow_nominal
@@ -224,38 +207,40 @@ protected
     "Specific heat capacity of the fluid";
 
 equation
-  connect(port_a1, senTDisSup.port_a)
-    annotation (Line(points={{-100,60},{-90,60}}, color={0,127,255}));
-  connect(senTDisSup.port_b, senMasFlo.port_a)
-    annotation (Line(points={{-70,60},{-50,60}}, color={0,127,255}));
-  connect(senTDisRet.port_a, port_b2)
-    annotation (Line(points={{-70,-60},{-100,-60}}, color={0,127,255}));
   connect(int.y,E)
     annotation (Line(points={{91,110},{110,110}}, color={0,0,127}));
-  connect(dTDis.y,pro. u1)
-    annotation (Line(points={{-27,116},{-12,116}}, color={0,0,127}));
   connect(pro.y,cp. u)
     annotation (Line(points={{11,110},{28,110}}, color={0,0,127}));
   connect(cp.y,int. u)
     annotation (Line(points={{51,110},{68,110}}, color={0,0,127}));
   connect(cp.y,Q_flow)
     annotation (Line(points={{51,110},{60,110},{60,150},{110,150}}, color={0,0,127}));
-  connect(senMasFlo.m_flow, pro.u2)
-    annotation (Line(points={{-40,71},{-40,104},{-12,104}}, color={0,0,127}));
-  connect(senTDisSup.T, dTDis.u1)
-    annotation (Line(points={{-80,71},{-80,122},{-50,122}}, color={0,0,127}));
-  connect(senTDisRet.T, dTDis.u2)
-    annotation (Line(points={{-60,-49},{-60,110},{-50,110}}, color={0,0,127}));
-  connect(spl.port_2, conVal.port_a)
-    annotation (Line(points={{30,-60},{20,-60}}, color={0,127,255}));
-  connect(senMasFlo.port_b, jun.port_1)
-    annotation (Line(points={{-30,60},{30,60}}, color={0,127,255}));
-  connect(conVal.port_b, senTDisRet.port_b)
-    annotation (Line(points={{0,-60},{-50,-60}}, color={0,127,255}));
-  connect(spl.port_3, cheVal.port_a)
-    annotation (Line(points={{40,-50},{40,0}}, color={0,127,255}));
-  connect(cheVal.port_b, jun.port_3)
-    annotation (Line(points={{40,20},{40,50}}, color={0,127,255}));
+  connect(conVal.port_a, port_a2) annotation (Line(points={{30,60},{20,60},{20,
+          -60},{100,-60}}, color={0,127,255}));
+  connect(conVal.port_a, cheVal.port_a) annotation (Line(points={{30,60},{20,60},
+          {20,0},{12,0}}, color={0,127,255}));
+  connect(conVal.port_b, senTDisRet.port_a) annotation (Line(points={{50,60},{
+          54,60},{54,60},{60,60}}, color={0,127,255}));
+  connect(senTDisRet.port_b, port_b1)
+    annotation (Line(points={{80,60},{100,60}}, color={0,127,255}));
+  connect(senTBuiSup.port_b, port_b2)
+    annotation (Line(points={{-80,-60},{-100,-60}}, color={0,127,255}));
+  connect(senMasFlo.m_flow, pro.u1)
+    annotation (Line(points={{-80,71},{-80,116},{-12,116}}, color={0,0,127}));
+  connect(dTDis.y, pro.u2)
+    annotation (Line(points={{-19,104},{-12,104}}, color={0,0,127}));
+  connect(senTDisRet.T, dTDis.u1) annotation (Line(points={{70,71},{70,80},{-48,
+          80},{-48,98},{-42,98}}, color={0,0,127}));
+  connect(senTDisSup.T, dTDis.u2)
+    annotation (Line(points={{-50,71},{-50,110},{-42,110}}, color={0,0,127}));
+  connect(port_a1, senMasFlo.port_a)
+    annotation (Line(points={{-100,60},{-90,60}}, color={0,127,255}));
+  connect(senMasFlo.port_b, senTDisSup.port_a)
+    annotation (Line(points={{-70,60},{-60,60}}, color={0,127,255}));
+  connect(senTDisSup.port_b, senTBuiSup.port_a) annotation (Line(points={{-40,
+          60},{-20,60},{-20,-60},{-60,-60}}, color={0,127,255}));
+  connect(senTDisSup.port_b, cheVal.port_b) annotation (Line(points={{-40,60},{
+          -20,60},{-20,0},{-8,0}}, color={0,127,255}));
   annotation (defaultComponentName="coo",
     Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
@@ -274,22 +259,47 @@ equation
           fillColor={35,138,255},
           fillPattern=FillPattern.Solid),
         Rectangle(
-          extent={{-80,68},{80,52}},
-          lineColor={0,0,0},
-          fillColor={0,0,255},
-          fillPattern=FillPattern.Solid),
-        Rectangle(
-          extent={{-80,-52},{80,-68}},
-          lineColor={0,0,0},
-          fillColor={170,213,255},
-          fillPattern=FillPattern.Solid),
-        Rectangle(
-          extent={{-8,52},{8,-52}},
+          extent={{-22,8},{22,-8}},
           lineColor={0,0,0},
           fillColor={170,213,255},
           fillPattern=FillPattern.Solid,
           pattern=LinePattern.None),
-        Rectangle(extent={{-8,52},{8,-52}}, lineColor={0,0,0})}),
+        Rectangle(
+          extent={{-80,68},{-22,52}},
+          lineColor={0,0,0},
+          fillColor={0,0,255},
+          fillPattern=FillPattern.Solid,
+          pattern=LinePattern.None),
+        Rectangle(
+          extent={{-38,68},{-22,-68}},
+          lineColor={0,0,0},
+          fillColor={0,0,255},
+          fillPattern=FillPattern.Solid,
+          pattern=LinePattern.None),
+        Rectangle(
+          extent={{-80,-52},{-22,-68}},
+          lineColor={0,0,0},
+          fillColor={0,0,255},
+          fillPattern=FillPattern.Solid,
+          pattern=LinePattern.None),
+        Rectangle(
+          extent={{22,-52},{80,-68}},
+          lineColor={0,0,0},
+          fillColor={170,213,255},
+          fillPattern=FillPattern.Solid,
+          pattern=LinePattern.None),
+        Rectangle(
+          extent={{22,68},{38,-68}},
+          lineColor={0,0,0},
+          fillColor={170,213,255},
+          fillPattern=FillPattern.Solid,
+          pattern=LinePattern.None),
+        Rectangle(
+          extent={{22,68},{80,52}},
+          lineColor={0,0,0},
+          fillColor={170,213,255},
+          fillPattern=FillPattern.Solid,
+          pattern=LinePattern.None)}),
     Diagram(coordinateSystem(preserveAspectRatio=false,
         extent={{-100,-160},{100,160}})),
         Icon(coordinateSystem(preserveAspectRatio=false)),

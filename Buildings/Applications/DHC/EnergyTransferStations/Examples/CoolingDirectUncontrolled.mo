@@ -24,7 +24,7 @@ model CoolingDirectUncontrolled
     dpSup=6000,
     dpRet=6000)
     "Direct cooling energy transfer station"
-    annotation (Placement(transformation(extent={{-10,-60},{10,-40}})));
+    annotation (Placement(transformation(extent={{20,40},{40,60}})));
 
   Buildings.Fluid.Sources.Boundary_pT souDis(
     redeclare package Medium = Medium,
@@ -33,7 +33,7 @@ model CoolingDirectUncontrolled
     T=280.15,
     nPorts=1)
     "District (primary) source"
-    annotation (Placement(transformation(extent={{-100,-20},{-80,0}})));
+    annotation (Placement(transformation(extent={{-40,46},{-20,66}})));
 
   Buildings.Fluid.Sources.Boundary_pT sinDis(
     redeclare package Medium = Medium,
@@ -41,7 +41,7 @@ model CoolingDirectUncontrolled
     T=289.15,
     nPorts=1)
     "District-side (primary) sink"
-    annotation (Placement(transformation(extent={{-100,-100},{-80,-80}})));
+    annotation (Placement(transformation(extent={{100,46},{80,66}})));
 
   Buildings.Fluid.HeatExchangers.HeaterCooler_u loa(
     redeclare package Medium = Medium,
@@ -54,25 +54,25 @@ model CoolingDirectUncontrolled
     Q_flow_nominal=-1,
     dp_nominal=0)
     "Aggregate building cooling load"
-    annotation (Placement(transformation(extent={{80,-20},{100,0}})));
+    annotation (Placement(transformation(extent={{0,20},{20,0}})));
 
   Modelica.Blocks.Sources.CombiTimeTable QCoo(
     table=[0,-100E3; 6,-80E3; 6,-50E3; 12,-20E3; 18,-150E3; 24,-100E3],
     timeScale=3600,
     extrapolation=Modelica.Blocks.Types.Extrapolation.Periodic)
     "Cooling demand"
-    annotation (Placement(transformation(extent={{-80,80},{-60,100}})));
+    annotation (Placement(transformation(extent={{-100,-20},{-80,0}})));
 
   Modelica.Blocks.Sources.Ramp ram(
     height=1,
     duration(displayUnit="h") = 18000,
     startTime(displayUnit="h") = 3600)
     "Ramp load from zero"
-    annotation (Placement(transformation(extent={{-80,34},{-60,54}})));
+    annotation (Placement(transformation(extent={{-100,-66},{-80,-46}})));
 
   Modelica.Blocks.Math.Product pro
     "Multiplyer to ramp load from zero"
-    annotation (Placement(transformation(extent={{-40,40},{-20,60}})));
+    annotation (Placement(transformation(extent={{-60,-60},{-40,-40}})));
 
   Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage val(
     redeclare package Medium = Medium,
@@ -82,7 +82,7 @@ model CoolingDirectUncontrolled
     riseTime=10,
     dpFixed_nominal=100000)
     "In-building terminal control valve"
-    annotation (Placement(transformation(extent={{120,-20},{140,0}})));
+    annotation (Placement(transformation(extent={{40,20},{60,0}})));
 
   Modelica.Blocks.Sources.Trapezoid tra(
     amplitude=2,
@@ -92,42 +92,41 @@ model CoolingDirectUncontrolled
     period(displayUnit="h") = 43200,
     offset=273.15 + 6)
     "District supply temperature trapezoid signal"
-    annotation (Placement(transformation(extent={{-140,-16},{-120,4}})));
+    annotation (Placement(transformation(extent={{-100,50},{-80,70}})));
 
   Modelica.Blocks.Math.Gain gain(k=-1/Q_flow_nominal)
-    annotation (Placement(transformation(extent={{80,40},{100,60}})));
+    annotation (Placement(transformation(extent={{0,-60},{20,-40}})));
 equation
   connect(tra.y, souDis.T_in)
-    annotation (Line(points={{-119,-6},{-102,-6}}, color={0,0,127}));
+    annotation (Line(points={{-79,60},{-42,60}},   color={0,0,127}));
   connect(QCoo.y[1], pro.u1)
-    annotation (Line(points={{-59,90},{-50,90},{-50,56},{-42,56}},color={0,0,127}));
+    annotation (Line(points={{-79,-10},{-70,-10},{-70,-44},{-62,-44}},
+                                                                  color={0,0,127}));
   connect(ram.y, pro.u2)
-    annotation (Line(points={{-59,44},{-42,44}},color={0,0,127}));
-  connect(loa.u, pro.y)
-    annotation (Line(points={{78,-4},{60,-4},{60,50},{-19,50}},
-                                                              color={0,0,127}));
+    annotation (Line(points={{-79,-56},{-62,-56}},
+                                                color={0,0,127}));
   connect(loa.port_b, val.port_a)
-    annotation (Line(points={{100,-10},{120,-10}}, color={0,127,255}));
-  connect(coo.port_a1, souDis.ports[1])
-    annotation (Line(points={{-10,-44},{-20,-44},{-20,-10},{-80,-10}},
-     color={0,127,255}));
-  connect(sinDis.ports[1], coo.port_b2)
-    annotation (Line(points={{-80,-90},{-20,-90},{-20,-56},{-10,-56}},
-     color={0,127,255}));
-  connect(loa.port_a, coo.port_b1)
-    annotation (Line(points={{80,-10},{20,-10},{20,-44},{10,-44}},
-     color={0,127,255}));
-  connect(val.port_b, coo.port_a2)
-    annotation (Line(points={{140,-10},{150,-10},{150,-90},{20,-90},{20,-56},
-     {10,-56}}, color={0,127,255}));
+    annotation (Line(points={{20,10},{40,10}},     color={0,127,255}));
 
   connect(pro.y, gain.u)
-    annotation (Line(points={{-19,50},{78,50}}, color={0,0,127}));
+    annotation (Line(points={{-39,-50},{-2,-50}},
+                                                color={0,0,127}));
+  connect(souDis.ports[1], coo.port_a1)
+    annotation (Line(points={{-20,56},{20,56}}, color={0,127,255}));
+  connect(coo.port_b2, loa.port_a) annotation (Line(points={{20,44},{-10,44},{
+          -10,10},{0,10}}, color={0,127,255}));
+  connect(val.port_b, coo.port_a2) annotation (Line(points={{60,10},{70,10},{70,
+          44},{40,44}}, color={0,127,255}));
+  connect(coo.port_b1, sinDis.ports[1])
+    annotation (Line(points={{40,56},{80,56}}, color={0,127,255}));
+  connect(pro.y, loa.u) annotation (Line(points={{-39,-50},{-20,-50},{-20,4},{
+          -2,4}}, color={0,0,127}));
   connect(gain.y, val.y)
-    annotation (Line(points={{101,50},{130,50},{130,2}}, color={0,0,127}));
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false)),
+    annotation (Line(points={{21,-50},{50,-50},{50,-2}}, color={0,0,127}));
+  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-120,
+            -120},{120,120}})),
     Diagram(coordinateSystem(preserveAspectRatio=false,
-      extent={{-160,-120},{160,120}})),
+      extent={{-120,-120},{120,120}})),
   __Dymola_Commands(file=
     "modelica://Buildings/Resources/Scripts/Dymola/Applications/DHC/EnergyTransferStations/Examples/CoolingDirectUncontrolled.mos"
     "Simulate and plot"),
