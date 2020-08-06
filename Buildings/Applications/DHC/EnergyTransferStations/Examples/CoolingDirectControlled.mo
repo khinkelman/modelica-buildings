@@ -29,14 +29,15 @@ model CoolingDirectControlled
     redeclare package Medium = Medium,
     mBui_flow_nominal=mBui_flow_nominal,
     controllerType=Modelica.Blocks.Types.SimpleController.PI,
-    k=0.5,
+    k=0.1,
     Ti=200,
-    initType=Modelica.Blocks.Types.InitPID.InitialOutput)
+    initType=Modelica.Blocks.Types.InitPID.InitialOutput,
+    y_start=1)
     annotation (Placement(transformation(extent={{20,40},{40,60}})));
 
   Modelica.Blocks.Sources.Constant TSetBuiSup(k=273.15 + 7)
     "Building supply temperature setpont"
-    annotation (Placement(transformation(extent={{-100,28},{-80,48}})));
+    annotation (Placement(transformation(extent={{-100,30},{-80,50}})));
 
   Buildings.Fluid.Sources.Boundary_pT sinDis(
     redeclare package Medium = Medium,
@@ -45,8 +46,8 @@ model CoolingDirectControlled
     "District sink"
     annotation (Placement(transformation(extent={{100,46},{80,66}})));
 
-  Modelica.Blocks.Sources.RealExpression TDisSupNoi(y=(273.15 + 7) + 2*sin(time
-        *4*3.14/86400))
+  Modelica.Blocks.Sources.RealExpression TDisSupNoi(y=(273.15 + 6) + sin(time*4
+        *3.14/86400))
     "Sinusoidal noise signal for district supply temperature"
     annotation (Placement(transformation(extent={{-100,50},{-80,70}})));
 
@@ -79,8 +80,7 @@ model CoolingDirectControlled
   Modelica.Blocks.Sources.Ramp ram(
     height=1,
     duration(displayUnit="h") = 3600,
-    startTime(displayUnit="h") = 0)
-    "Ramp load from zero"
+    startTime(displayUnit="h") = 0) "Ramp load from zero"
     annotation (Placement(transformation(extent={{-100,-60},{-80,-40}})));
 
   Modelica.Blocks.Math.Product pro
@@ -90,6 +90,7 @@ model CoolingDirectControlled
   Buildings.Fluid.Sources.Boundary_pT souDis(
     redeclare package Medium = Medium,
     p=350000,
+    use_T_in=true,
     T(displayUnit="degC") = 280.15,
     nPorts=1)
     "District source"
@@ -102,9 +103,18 @@ model CoolingDirectControlled
     "Cooling demand"
     annotation (Placement(transformation(extent={{-100,-100},{-80,-80}})));
 
+  Modelica.Blocks.Sources.Ramp TDisSup_ramp(
+    height=-2,
+    duration(displayUnit="h") = 21600,
+    offset=273.15 + 7,
+    startTime(displayUnit="h") = 43200) "Supply ramp"
+    annotation (Placement(transformation(extent={{-48,86},{-28,106}})));
+  Modelica.Blocks.Sources.BooleanStep conSta(startTime(displayUnit="h") = 3600)
+    "ETS controller state"
+    annotation (Placement(transformation(extent={{-100,-10},{-80,10}})));
 equation
   connect(TSetBuiSup.y, coo.TSetBuiSup)
-    annotation (Line(points={{-79,38},{18,38}},    color={0,0,127}));
+    annotation (Line(points={{-79,40},{18,40}},    color={0,0,127}));
   connect(pum.port_b, loa.port_a)
     annotation (Line(points={{20,10},{40,10}},   color={0,127,255}));
   connect(ram.y, pro.u1)
@@ -129,6 +139,10 @@ equation
           -2},{10,-2}}, color={0,0,127}));
   connect(pro.y, loa.u) annotation (Line(points={{-39,-56},{30,-56},{30,4},{38,
           4}}, color={0,0,127}));
+  connect(coo.trigger, conSta.y) annotation (Line(points={{18,35},{-60,35},{-60,
+          0},{-79,0}}, color={255,0,255}));
+  connect(TDisSupNoi.y, souDis.T_in)
+    annotation (Line(points={{-79,60},{-42,60}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-120,
             -120},{120,120}})),
     Diagram(coordinateSystem(preserveAspectRatio=false,

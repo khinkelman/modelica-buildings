@@ -120,7 +120,7 @@ model CoolingDirectControlled
 
   Modelica.Blocks.Interfaces.RealInput TSetBuiSup
     "Building supply setpoint temperature"
-    annotation (Placement(transformation(extent={{-140,-140},{-100,-100}})));
+    annotation (Placement(transformation(extent={{-140,-120},{-100,-80}})));
 
   Modelica.Blocks.Interfaces.RealOutput Q_flow(
     final quantity="HeatFlowRate",
@@ -211,8 +211,14 @@ model CoolingDirectControlled
     final xi_start=xi_start,
     final xd_start=xd_start,
     final y_start=y_start,
-    final reverseAction=false)
+    final reverseAction=true,
+    reset=Buildings.Types.Reset.Parameter,
+    y_reset=1)
     annotation (Placement(transformation(extent={{-60,-30},{-40,-10}})));
+  Modelica.Blocks.Interfaces.BooleanInput trigger
+    "Trigger to turn on/off the controller"
+    annotation (Placement(transformation(extent={{-20,-20},{20,20}},
+        origin={-120,-150})));
 protected
   parameter Modelica.SIunits.MassFlowRate mDis_flow_nominal= mBui_flow_nominal
     "Nominal mass flow rate of district cooling side";
@@ -263,12 +269,15 @@ equation
           {-20,60},{-20,-60},{-40,-60}}, color={0,127,255}));
   connect(senTDisSup.port_b, cheVal.port_b) annotation (Line(points={{-40,60},{-20,
           60},{-20,20},{-8,20}}, color={0,127,255}));
-  connect(TSetBuiSup, conPID.u_s) annotation (Line(points={{-120,-120},{-80,-120},
-          {-80,-20},{-62,-20}}, color={0,0,127}));
+  connect(TSetBuiSup, conPID.u_s) annotation (Line(points={{-120,-100},{-80,
+          -100},{-80,-20},{-62,-20}},
+                                color={0,0,127}));
   connect(senTBuiSup.T, conPID.u_m)
     annotation (Line(points={{-50,-49},{-50,-32}}, color={0,0,127}));
   connect(conPID.y, conVal.y)
     annotation (Line(points={{-39,-20},{40,-20},{40,48}}, color={0,0,127}));
+  connect(trigger, conPID.trigger) annotation (Line(points={{-120,-150},{-72,-150},
+          {-72,-40},{-58,-40},{-58,-32}}, color={255,0,255}));
   annotation (defaultComponentName="coo",
     Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
