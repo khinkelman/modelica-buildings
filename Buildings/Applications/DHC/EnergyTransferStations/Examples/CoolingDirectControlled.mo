@@ -27,6 +27,7 @@ model CoolingDirectControlled
   Buildings.Applications.DHC.EnergyTransferStations.CoolingDirectControlled coo(
     show_T=true,
     redeclare package Medium = Medium,
+    show_heaFlo=true,
     mBui_flow_nominal=mBui_flow_nominal,
     controllerType=Modelica.Blocks.Types.SimpleController.PI,
     k=0.1,
@@ -103,12 +104,6 @@ model CoolingDirectControlled
     "Cooling demand"
     annotation (Placement(transformation(extent={{-100,-100},{-80,-80}})));
 
-  Modelica.Blocks.Sources.Ramp TDisSup_ramp(
-    height=-2,
-    duration(displayUnit="h") = 21600,
-    offset=273.15 + 7,
-    startTime(displayUnit="h") = 43200) "Supply ramp"
-    annotation (Placement(transformation(extent={{-48,86},{-28,106}})));
   Modelica.Blocks.Sources.BooleanStep conSta(startTime(displayUnit="h") = 3600)
     "ETS controller state"
     annotation (Placement(transformation(extent={{-100,-10},{-80,10}})));
