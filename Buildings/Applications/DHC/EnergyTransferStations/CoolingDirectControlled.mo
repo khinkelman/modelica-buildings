@@ -326,6 +326,8 @@ equation
     annotation (Line(points={{20,20},{12,20}}, color={0,127,255}));
   connect(cheVal.port_b, jun.port_3)
     annotation (Line(points={{-8,20},{-20,20}}, color={0,127,255}));
+  connect(E, E)
+    annotation (Line(points={{110,110},{110,110},{110,110}}, color={0,0,127}));
   annotation (defaultComponentName="coo",
     Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(

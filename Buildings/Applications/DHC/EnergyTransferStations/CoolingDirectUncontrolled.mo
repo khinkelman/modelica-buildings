@@ -12,6 +12,10 @@ model CoolingDirectUncontrolled
  replaceable package Medium =
    Modelica.Media.Interfaces.PartialMedium "Medium in the component";
 
+  parameter Boolean show_heaFlo = false
+    "Set to true to output the heat flow rate transferred to the connected load"
+    annotation(Evaluate=true);
+
   parameter Modelica.SIunits.MassFlowRate m_flow_nominal(
     final min=0,
     final start=0.5)
@@ -31,13 +35,14 @@ model CoolingDirectUncontrolled
   Modelica.Blocks.Interfaces.RealOutput Q_flow(
     final quantity="HeatFlowRate",
     final unit="W",
-    displayUnit="kW") "Measured heat flow rate at the ETS"
+    displayUnit="kW") if show_heaFlo
+    "Measured heat flow rate at the ETS"
     annotation (Placement(transformation(extent={{100,140},{120,160}})));
 
   Modelica.Blocks.Interfaces.RealOutput E(
     final quantity="Energy",
     final unit="J",
-    displayUnit="kWh")
+    displayUnit="kWh") if show_heaFlo
     "Measured energy consumption at the ETS"
     annotation (Placement(transformation(extent={{100,100},{120,120}})));
 
@@ -59,37 +64,37 @@ model CoolingDirectUncontrolled
 
   Buildings.Fluid.Sensors.MassFlowRate senMasFlo(
     redeclare final package Medium = Medium,
-    final allowFlowReversal=allowFlowReversal1)
+    final allowFlowReversal=allowFlowReversal1) if show_heaFlo
     "District supply mass flow rate sensor"
     annotation (Placement(transformation(extent={{-90,50},{-70,70}})));
 
   Buildings.Fluid.Sensors.TemperatureTwoPort senTDisSup(
     redeclare final package Medium = Medium,
     final allowFlowReversal=allowFlowReversal1,
-    final m_flow_nominal=m_flow_nominal)
+    final m_flow_nominal=m_flow_nominal) if show_heaFlo
     "District supply temperature sensor"
     annotation (Placement(transformation(extent={{-60,50},{-40,70}})));
 
   Buildings.Fluid.Sensors.TemperatureTwoPort senTDisRet(
     redeclare final package Medium = Medium,
     final allowFlowReversal=allowFlowReversal1,
-    final m_flow_nominal=m_flow_nominal)
+    final m_flow_nominal=m_flow_nominal) if show_heaFlo
     "District return temperature sensor"
     annotation (Placement(transformation(extent={{60,50},{80,70}})));
 
-  Modelica.Blocks.Continuous.Integrator int(final k=1)
+  Modelica.Blocks.Continuous.Integrator int(final k=1) if show_heaFlo
     "Integration"
     annotation (Placement(transformation(extent={{70,100},{90,120}})));
 
-  Modelica.Blocks.Math.Add dTDis(final k1=+1, final k2=-1)
+  Modelica.Blocks.Math.Add dTDis(final k1=+1, final k2=-1) if show_heaFlo
     "Temperature difference on the district side"
     annotation (Placement(transformation(extent={{-30,114},{-10,94}})));
 
-  Modelica.Blocks.Math.Product pro
-    "Product"
+  Modelica.Blocks.Math.Product pro if show_heaFlo
+    "Delta T times flow rate"
     annotation (Placement(transformation(extent={{2,100},{22,120}})));
 
-  Modelica.Blocks.Math.Gain cp(final k=cp_default)
+  Modelica.Blocks.Math.Gain cp(final k=cp_default) if show_heaFlo
     "Specific heat multiplier to calculate heat flow rate"
     annotation (Placement(transformation(extent={{30,100},{50,120}})));
 
@@ -103,6 +108,15 @@ protected
     "Specific heat capacity of the fluid";
 
 equation
+  if not show_heaFlo then
+    connect(pipSup.port_a, port_a1)
+      annotation (Line(points={{-30,60},{-36,60},{-36,40},{-94,40},{-94,60},{-100,60}},
+        color={0,127,255}));
+    connect(pipRet.port_b, port_b1)
+      annotation (Line(points={{60,-60},{40,-60},{40,60},{56,60},{56,40},{84,40},{84,60},{100,60}},
+        color={0,127,255}));
+  end if;
+
   connect(int.y,E)
     annotation (Line(points={{91,110},{110,110}}, color={0,0,127}));
   connect(pro.y, cp.u)
@@ -111,27 +125,26 @@ equation
     annotation (Line(points={{51,110},{68,110}}, color={0,0,127}));
   connect(cp.y, Q_flow)
     annotation (Line(points={{51,110},{60,110},{60,150},{110,150}}, color={0,0,127}));
-
   connect(port_a1, senMasFlo.port_a)
     annotation (Line(points={{-100,60},{-90,60}}, color={0,127,255}));
   connect(senMasFlo.m_flow, pro.u1)
     annotation (Line(points={{-80,71},{-80,116},{0,116}}, color={0,0,127}));
   connect(senTDisSup.T, dTDis.u2)
     annotation (Line(points={{-50,71},{-50,110},{-32,110}}, color={0,0,127}));
-  connect(senTDisRet.T, dTDis.u1) annotation (Line(points={{70,71},{70,80},{-46,
-          80},{-46,98},{-32,98}}, color={0,0,127}));
+  connect(senTDisRet.T, dTDis.u1)
+    annotation (Line(points={{70,71},{70,80},{-46,80},{-46,98},{-32,98}}, color={0,0,127}));
   connect(dTDis.y, pro.u2)
     annotation (Line(points={{-9,104},{0,104}}, color={0,0,127}));
   connect(senMasFlo.port_b, senTDisSup.port_a)
     annotation (Line(points={{-70,60},{-60,60}}, color={0,127,255}));
   connect(senTDisSup.port_b, pipSup.port_a)
     annotation (Line(points={{-40,60},{-30,60}}, color={0,127,255}));
-  connect(pipSup.port_b, port_b2) annotation (Line(points={{-10,60},{0,60},{0,
-          -60},{-100,-60}}, color={0,127,255}));
+  connect(pipSup.port_b, port_b2)
+    annotation (Line(points={{-10,60},{0,60},{0,-60},{-100,-60}}, color={0,127,255}));
   connect(port_a2, pipRet.port_a)
     annotation (Line(points={{100,-60},{80,-60}}, color={0,127,255}));
-  connect(pipRet.port_b, senTDisRet.port_a) annotation (Line(points={{60,-60},{
-          40,-60},{40,60},{60,60}}, color={0,127,255}));
+  connect(pipRet.port_b, senTDisRet.port_a)
+    annotation (Line(points={{60,-60},{40,-60},{40,60},{60,60}}, color={0,127,255}));
   connect(senTDisRet.port_b, port_b1)
     annotation (Line(points={{80,60},{100,60}}, color={0,127,255}));
   annotation (defaultComponentName="coo",

@@ -20,6 +20,7 @@ model CoolingDirectUncontrolled
   Buildings.Applications.DHC.EnergyTransferStations.CoolingDirectUncontrolled coo(
     show_T=true,
     redeclare package Medium = Medium,
+    show_heaFlo=true,
     m_flow_nominal=m_flow_nominal,
     dpSup=6000,
     dpRet=6000)
