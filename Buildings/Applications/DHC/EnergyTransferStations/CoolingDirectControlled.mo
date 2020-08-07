@@ -108,10 +108,6 @@ model CoolingDirectControlled
     "Type of mass balance: dynamic (3 initialization options) or steady state"
     annotation(Dialog(tab="Advanced"));
 
-//  parameter Modelica.SIunits.PressureDifference[3] dp_nominal=500*{1,-1,1}
-//    "Nominal pressure drop in pipe junctions"
-//    annotation(Dialog(tab="Advanced"));
-
   // Time constants
   final parameter Modelica.SIunits.Time tau1= if allowFlowReversal1 then 1 else 0
     "Time constant at nominal flow rate (district side)";
@@ -140,7 +136,7 @@ model CoolingDirectControlled
     final m_flow_nominal=mDis_flow_nominal,
     final dpValve_nominal=dpConVal_nominal,
     riseTime(displayUnit="s") = 60) "Control valve"
-    annotation (Placement(transformation(extent={{30,70},{50,50}})));
+    annotation (Placement(transformation(extent={{40,70},{60,50}})));
 
   Fluid.FixedResistances.CheckValve cheVal(
     redeclare final package Medium = Medium,
@@ -149,6 +145,41 @@ model CoolingDirectControlled
     final m_flow_nominal=mByp_flow_nominal) "Check valve (backflow preventer)"
     annotation (Placement(transformation(
       extent={{10,-10},{-10,10}},origin={2,20})));
+
+  Buildings.Fluid.FixedResistances.Junction jun(
+    redeclare final package Medium = Medium,
+    final energyDynamics=energyDynamics,
+    final m_flow_nominal=mBui_flow_nominal*{1,-1,1},
+    dp_nominal={0,0,0},
+    final portFlowDirection_1= if allowFlowReversal1 then
+      Modelica.Fluid.Types.PortFlowDirection.Bidirectional else
+      Modelica.Fluid.Types.PortFlowDirection.Entering,
+    final portFlowDirection_2= if allowFlowReversal2 then
+      Modelica.Fluid.Types.PortFlowDirection.Bidirectional else
+      Modelica.Fluid.Types.PortFlowDirection.Leaving,
+    final portFlowDirection_3=Modelica.Fluid.Types.PortFlowDirection.Entering)
+    "Bypass junction"
+    annotation (Placement(transformation(extent={{-10,10},{10,-10}},
+        rotation=-90,
+        origin={-30,20})));
+
+  Buildings.Fluid.FixedResistances.Junction spl(
+    redeclare final package Medium = Medium,
+    final energyDynamics=energyDynamics,
+    final m_flow_nominal=mBui_flow_nominal*{1,-1,-1},
+    dp_nominal={0,0,0},
+    final portFlowDirection_1= if allowFlowReversal2 then
+      Modelica.Fluid.Types.PortFlowDirection.Bidirectional else
+      Modelica.Fluid.Types.PortFlowDirection.Entering,
+    final portFlowDirection_2= if allowFlowReversal1 then
+      Modelica.Fluid.Types.PortFlowDirection.Bidirectional else
+      Modelica.Fluid.Types.PortFlowDirection.Leaving,
+    final portFlowDirection_3=Modelica.Fluid.Types.PortFlowDirection.Leaving)
+    "Bypass junction, splitter"
+    annotation (Placement(transformation(extent={{10,-10},{-10,10}},
+        rotation=-90,
+        origin={30,20})));
+
 
   Buildings.Fluid.Sensors.MassFlowRate senMasFlo(
     redeclare final package Medium = Medium,
@@ -170,7 +201,7 @@ model CoolingDirectControlled
     final m_flow_nominal=mDis_flow_nominal,
     final tau=tau1)
     "District return temperature sensor"
-    annotation (Placement(transformation(extent={{60,50},{80,70}})));
+    annotation (Placement(transformation(extent={{70,50},{90,70}})));
 
   Buildings.Fluid.Sensors.TemperatureTwoPort senTBuiSup(
     redeclare final package Medium = Medium,
@@ -243,21 +274,17 @@ equation
     annotation (Line(points={{51,110},{68,110}}, color={0,0,127}));
   connect(cp.y,Q_flow)
     annotation (Line(points={{51,110},{60,110},{60,150},{110,150}}, color={0,0,127}));
-  connect(conVal.port_a, port_a2) annotation (Line(points={{30,60},{20,60},{20,-60},
-          {100,-60}}, color={0,127,255}));
-  connect(conVal.port_a, cheVal.port_a) annotation (Line(points={{30,60},{20,60},
-          {20,20},{12,20}}, color={0,127,255}));
-  connect(conVal.port_b, senTDisRet.port_a) annotation (Line(points={{50,60},{54,
-          60},{54,60},{60,60}}, color={0,127,255}));
+  connect(conVal.port_b, senTDisRet.port_a) annotation (Line(points={{60,60},{70,
+          60}},                 color={0,127,255}));
   connect(senTDisRet.port_b, port_b1)
-    annotation (Line(points={{80,60},{100,60}}, color={0,127,255}));
+    annotation (Line(points={{90,60},{100,60}}, color={0,127,255}));
   connect(senTBuiSup.port_b, port_b2)
     annotation (Line(points={{-60,-60},{-100,-60}}, color={0,127,255}));
   connect(senMasFlo.m_flow, pro.u1)
     annotation (Line(points={{-80,71},{-80,116},{-12,116}}, color={0,0,127}));
   connect(dTDis.y, pro.u2)
     annotation (Line(points={{-19,104},{-12,104}}, color={0,0,127}));
-  connect(senTDisRet.T, dTDis.u1) annotation (Line(points={{70,71},{70,80},{-48,
+  connect(senTDisRet.T, dTDis.u1) annotation (Line(points={{80,71},{80,80},{-48,
           80},{-48,98},{-42,98}}, color={0,0,127}));
   connect(senTDisSup.T, dTDis.u2)
     annotation (Line(points={{-50,71},{-50,110},{-42,110}}, color={0,0,127}));
@@ -265,19 +292,27 @@ equation
     annotation (Line(points={{-100,60},{-90,60}}, color={0,127,255}));
   connect(senMasFlo.port_b, senTDisSup.port_a)
     annotation (Line(points={{-70,60},{-60,60}}, color={0,127,255}));
-  connect(senTDisSup.port_b, senTBuiSup.port_a) annotation (Line(points={{-40,60},
-          {-20,60},{-20,-60},{-40,-60}}, color={0,127,255}));
-  connect(senTDisSup.port_b, cheVal.port_b) annotation (Line(points={{-40,60},{-20,
-          60},{-20,20},{-8,20}}, color={0,127,255}));
   connect(TSetBuiSup, conPID.u_s) annotation (Line(points={{-120,-100},{-80,
           -100},{-80,-20},{-62,-20}},
                                 color={0,0,127}));
   connect(senTBuiSup.T, conPID.u_m)
     annotation (Line(points={{-50,-49},{-50,-32}}, color={0,0,127}));
   connect(conPID.y, conVal.y)
-    annotation (Line(points={{-39,-20},{40,-20},{40,48}}, color={0,0,127}));
+    annotation (Line(points={{-39,-20},{50,-20},{50,48}}, color={0,0,127}));
   connect(trigger, conPID.trigger) annotation (Line(points={{-120,-150},{-72,-150},
           {-72,-40},{-58,-40},{-58,-32}}, color={255,0,255}));
+  connect(senTBuiSup.port_a, jun.port_2) annotation (Line(points={{-40,-60},{-30,
+          -60},{-30,10}}, color={0,127,255}));
+  connect(senTDisSup.port_b, jun.port_1)
+    annotation (Line(points={{-40,60},{-30,60},{-30,30}}, color={0,127,255}));
+  connect(conVal.port_a, spl.port_2)
+    annotation (Line(points={{40,60},{30,60},{30,30}}, color={0,127,255}));
+  connect(spl.port_1, port_a2)
+    annotation (Line(points={{30,10},{30,-60},{100,-60}}, color={0,127,255}));
+  connect(spl.port_3, cheVal.port_a)
+    annotation (Line(points={{20,20},{12,20}}, color={0,127,255}));
+  connect(cheVal.port_b, jun.port_3)
+    annotation (Line(points={{-8,20},{-20,20}}, color={0,127,255}));
   annotation (defaultComponentName="coo",
     Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
