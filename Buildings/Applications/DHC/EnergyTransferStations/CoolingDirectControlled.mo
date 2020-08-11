@@ -83,7 +83,7 @@ model CoolingDirectControlled
       4: initial output)"
     annotation(Dialog(group="Initialization",tab="Controller"));
 
-  parameter Real xi_start=0
+  parameter Real xi_start=1
     "Initial or guess value value for integrator output (= integrator state)"
     annotation (Dialog(group="Initialization",
       tab="Controller", enable=
@@ -101,6 +101,17 @@ model CoolingDirectControlled
     annotation(Dialog(group="Initialization",
       tab="Controller", enable=
         initType == Modelica.Blocks.Types.InitPID.InitialOutput));
+
+  parameter Buildings.Types.Reset reset = Buildings.Types.Reset.Disabled
+    "Type of controller output reset"
+    annotation(Evaluate=true,
+      Dialog(group="Integrator reset",tab="Controller"));
+
+  parameter Real y_reset=xi_start
+    "Value to which the controller output is reset if the boolean trigger has a rising edge, used if reset == Buildings.Types.Reset.Parameter"
+    annotation(Dialog(enable=reset == Buildings.Types.Reset.Parameter,
+      group="Integrator reset",
+      tab="Controller"));
 
   // Advanced parameters
   parameter Modelica.Fluid.Types.Dynamics energyDynamics=
@@ -121,6 +132,12 @@ model CoolingDirectControlled
   Modelica.Blocks.Interfaces.RealInput TSetBuiSup
     "Building supply setpoint temperature"
     annotation (Placement(transformation(extent={{-140,-120},{-100,-80}})));
+
+  Modelica.Blocks.Interfaces.BooleanInput trigger if
+     reset <> Buildings.Types.Reset.Disabled
+    "Trigger to turn on/off the controller"
+    annotation (Placement(transformation(extent={{-20,-20},{20,20}},
+        origin={-120,-150})));
 
   Modelica.Blocks.Interfaces.RealOutput Q_flow(
     final quantity="HeatFlowRate",
@@ -249,13 +266,10 @@ model CoolingDirectControlled
     final xd_start=xd_start,
     final y_start=y_start,
     final reverseAction=true,
-    reset=Buildings.Types.Reset.Parameter,
-    y_reset=1)
+    final reset=reset,
+    final y_reset=y_reset)
     annotation (Placement(transformation(extent={{-60,-30},{-40,-10}})));
-  Modelica.Blocks.Interfaces.BooleanInput trigger
-    "Trigger to turn on/off the controller"
-    annotation (Placement(transformation(extent={{-20,-20},{20,20}},
-        origin={-120,-150})));
+
 protected
   parameter Modelica.SIunits.MassFlowRate mDis_flow_nominal= mBui_flow_nominal
     "Nominal mass flow rate of district cooling side";

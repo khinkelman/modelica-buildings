@@ -33,7 +33,8 @@ model CoolingDirectControlled
     k=0.1,
     Ti=200,
     initType=Modelica.Blocks.Types.InitPID.InitialOutput,
-    y_start=1)
+    y_start=1,
+    reset=Buildings.Types.Reset.Parameter)
     annotation (Placement(transformation(extent={{20,40},{40,60}})));
 
   Modelica.Blocks.Sources.Constant TSetBuiSup(k=273.15 + 7)
@@ -104,8 +105,8 @@ model CoolingDirectControlled
     "Cooling demand"
     annotation (Placement(transformation(extent={{-100,-100},{-80,-80}})));
 
-  Modelica.Blocks.Sources.BooleanStep conSta(startTime(displayUnit="h") = 3600)
-    "ETS controller state"
+  Modelica.Blocks.Sources.BooleanStep conOn(startTime(displayUnit="h") = 3600)
+    "ETS controller state (on = true)"
     annotation (Placement(transformation(extent={{-100,-10},{-80,10}})));
 equation
   connect(TSetBuiSup.y, coo.TSetBuiSup)
@@ -134,7 +135,7 @@ equation
           -2},{10,-2}}, color={0,0,127}));
   connect(pro.y, loa.u) annotation (Line(points={{-39,-56},{30,-56},{30,4},{38,
           4}}, color={0,0,127}));
-  connect(coo.trigger, conSta.y) annotation (Line(points={{18,35},{-60,35},{-60,
+  connect(coo.trigger, conOn.y) annotation (Line(points={{18,35},{-60,35},{-60,
           0},{-79,0}}, color={255,0,255}));
   connect(TDisSupNoi.y, souDis.T_in)
     annotation (Line(points={{-79,60},{-42,60}}, color={0,0,127}));
