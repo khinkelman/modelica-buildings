@@ -8,8 +8,8 @@ Heater_T
 PlateHeatExchangerEffectivenessNTU
 PrescribedOutlet
 SensibleCooler_T
-SteamHeatExchangerEffectivenessNTU
 SteamConstantEffectiveness
+SteamHeatExchangerIdeal
 WetCoilCounterFlow
 WetCoilDiscretized
 ActiveBeams
