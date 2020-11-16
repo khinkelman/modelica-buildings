@@ -57,6 +57,10 @@ model SteamConstantEffectiveness
     dp1_nominal=6000,
     dp2_nominal=6000,
     eps=eps) annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(port_a1, con.port_a)
     annotation (Line(points={{-100,60},{-80,60}}, color={0,127,255}));
@@ -122,5 +126,9 @@ equation
           pattern=LinePattern.None,
           fillColor={0,0,0},
           fillPattern=FillPattern.Solid)}),                      Diagram(
-        coordinateSystem(preserveAspectRatio=false)));
+        coordinateSystem(preserveAspectRatio=false)),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end SteamConstantEffectiveness;

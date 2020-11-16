@@ -33,6 +33,10 @@ model Evaporation "Test model for water evaporation process"
     show_T=true,
     pSte_nominal=pSte_nominal)                       "Evaporation process"
     annotation (Placement(transformation(extent={{0,0},{20,20}})));
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(watSou.m_flow_in, m_flow.y)
     annotation (Line(points={{-52,18},{-61,18}}, color={0,0,127}));
@@ -46,5 +50,9 @@ equation
         coordinateSystem(preserveAspectRatio=false)),
 experiment(Tolerance=1e-6, StopTime=100.0),
 __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Fluid/Boilers/BaseClasses/Examples/Evaporation.mos"
-        "Simulate and plot"));
+        "Simulate and plot"),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end Evaporation;

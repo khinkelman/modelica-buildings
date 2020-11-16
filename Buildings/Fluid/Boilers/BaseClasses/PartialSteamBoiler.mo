@@ -221,6 +221,9 @@ protected
     annotation (Placement(transformation(extent={{70,-10},{90,10}})));
 
 initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 
   // Energy and mass balance
   assert((energyDynamics == Modelica.Fluid.Types.Dynamics.SteadyState) or
@@ -359,5 +362,9 @@ equation
         smooth=Smooth.Bezier,
           extent={{-60,-22},{-36,2}})}),
     Diagram(coordinateSystem(preserveAspectRatio=false,
-        extent={{-100,-100},{100,120}})));
+        extent={{-100,-100},{100,120}})),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end PartialSteamBoiler;

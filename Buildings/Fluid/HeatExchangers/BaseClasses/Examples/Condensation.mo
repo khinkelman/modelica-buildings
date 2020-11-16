@@ -35,6 +35,10 @@ model Condensation
     use_m_flow_in=true,
     T=273.15 + 179.9,
     nPorts=1) annotation (Placement(transformation(extent={{-40,-10},{-20,10}})));
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(con.port_b, watSin.ports[1])
     annotation (Line(points={{20,0},{40,0}},   color={0,127,255}));
@@ -48,5 +52,9 @@ equation
         coordinateSystem(preserveAspectRatio=false)),
   experiment(Tolerance=1e-6, StopTime=100.0),
 __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Fluid/HeatExchangers/BaseClasses/Examples/Condensation.mos"
-        "Simulate and plot"));
+        "Simulate and plot"),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end Condensation;

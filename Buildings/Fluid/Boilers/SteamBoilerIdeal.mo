@@ -49,6 +49,10 @@ model SteamBoilerIdeal "Simple steam boiler model for testing"
   Modelica.Blocks.Sources.RealExpression pSteSet(y=pSte_nominal)
     "Steam pressure setpoint"
     annotation (Placement(transformation(extent={{-90,42},{-70,62}})));
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(senMasFlo.m_flow, QMea_flow.u1)
     annotation (Line(points={{10,11},{10,86},{58,86}},
@@ -152,5 +156,9 @@ equation
           pattern=LinePattern.None,
           fillColor={0,0,127},
           fillPattern=FillPattern.Solid)}),                      Diagram(
-        coordinateSystem(preserveAspectRatio=false)));
+        coordinateSystem(preserveAspectRatio=false)),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end SteamBoilerIdeal;

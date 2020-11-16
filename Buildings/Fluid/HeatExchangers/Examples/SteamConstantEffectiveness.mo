@@ -96,6 +96,10 @@ model SteamConstantEffectiveness
     redeclare package MediumSat = MediumSte,
     pSte_nominal=pSte_nominal)
     annotation (Placement(transformation(extent={{70,30},{90,50}})));
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(TSet.y, P.u_s) annotation (Line(
       points={{-49,90},{-22,90}},
@@ -129,6 +133,8 @@ experiment(Tolerance=1e-6, StopTime=3600),
 __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Fluid/HeatExchangers/Examples/SteamConstantEffectiveness.mos"
         "Simulate and plot"),
 Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
 </html>",
 revisions="<html>
 </html>"));

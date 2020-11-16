@@ -30,6 +30,10 @@ model Combustion
   Modelica.Blocks.Sources.TimeTable y(table=[0,0; 1800,1; 1800,0; 2400,0; 2400,1;
         3600,1])
     annotation (Placement(transformation(extent={{-40,40},{-20,60}})));
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(com.port_b, fluGasSin.ports[1])
     annotation (Line(points={{20,0},{40,0}}, color={0,127,255}));
@@ -42,5 +46,9 @@ equation
         coordinateSystem(preserveAspectRatio=false)),
 experiment(Tolerance=1e-6, StopTime=3600.0),
 __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Fluid/Boilers/BaseClasses/Examples/Combustion.mos"
-        "Simulate and plot"));
+        "Simulate and plot"),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end Combustion;

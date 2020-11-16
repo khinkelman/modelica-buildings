@@ -21,6 +21,10 @@ model SteamHeatExchangerIdeal
 
   Modelica.Blocks.Interfaces.RealOutput dh(unit="J/kg") "Change in enthalpy"
     annotation (Placement(transformation(extent={{100,50},{120,70}})));
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(port_a, con.port_a)
     annotation (Line(points={{-100,0},{-10,0}}, color={0,127,255}));
@@ -103,5 +107,9 @@ equation
           extent={{-70,60},{70,-60}},
           lineColor={0,0,127},
           lineThickness=0.5)}),                                  Diagram(
-        coordinateSystem(preserveAspectRatio=false)));
+        coordinateSystem(preserveAspectRatio=false)),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end SteamHeatExchangerIdeal;

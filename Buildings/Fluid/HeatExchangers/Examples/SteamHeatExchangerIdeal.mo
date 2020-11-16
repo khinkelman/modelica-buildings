@@ -43,6 +43,10 @@ model SteamHeatExchangerIdeal
     T=523.15,
     nPorts=1) "Steam source"
     annotation (Placement(transformation(extent={{-20,-20},{0,0}})));
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(y.y, mAct_flow.u1) annotation (Line(points={{-59,70},{-50,70},{-50,56},
           {-42,56}}, color={0,0,127}));
@@ -60,5 +64,9 @@ equation
         coordinateSystem(preserveAspectRatio=false)),
     experiment(Tolerance=1e-6, StopTime=3600),
 __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Fluid/HeatExchangers/Examples/SteamHeatExchangerIdeal.mos"
-        "Simulate and plot"));
+        "Simulate and plot"),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end SteamHeatExchangerIdeal;

@@ -33,7 +33,10 @@ model Evaporation
 
   Modelica.SIunits.SpecificEnthalpy hWat_instream
     "Instreaming enthalpy at port_a";
-
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   port_b.p = port_a.p;
 
@@ -130,5 +133,9 @@ equation
           extent={{-147,-114},{153,-154}},
           lineColor={0,0,255},
           textString="%name")}),                                 Diagram(
-        coordinateSystem(preserveAspectRatio=false)));
+        coordinateSystem(preserveAspectRatio=false)),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end Evaporation;

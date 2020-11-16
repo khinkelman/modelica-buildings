@@ -43,6 +43,10 @@ model SteamBoilerFourPort
     dp_nominal=1400,
     final show_T = show_T) "Air side total pressure drop"
     annotation (Placement(transformation(extent={{40,-90},{20,-70}})));
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(port_a2, port_a2) annotation (Line(points={{100,-60},{100,-60},{100,
           -60}},
@@ -102,5 +106,9 @@ equation
         smooth=Smooth.Bezier,
           extent={{-60,-22},{-36,2}})}),                         Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-100,-120},{100,
-            120}})));
+            120}})),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end SteamBoilerFourPort;

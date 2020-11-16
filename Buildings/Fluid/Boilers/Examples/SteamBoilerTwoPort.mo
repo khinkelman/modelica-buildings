@@ -78,7 +78,10 @@ model SteamBoilerTwoPort "Test model for the steam boiler with two fluid ports"
   Modelica.Blocks.Sources.TimeTable y(table=[0,0; 1800,1; 1800,0; 2400,0; 2400,
         1; 3600,1])
     annotation (Placement(transformation(extent={{-80,60},{-60,80}})));
-
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(pSet.y, steSin.p_in) annotation (Line(points={{81,50},{90,50},{90,8},{
           82,8}},  color={0,0,127}));
@@ -102,5 +105,9 @@ equation
         coordinateSystem(preserveAspectRatio=false)),
 experiment(Tolerance=1e-6, StopTime=100.0),
 __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Fluid/Boilers/Examples/SteamBoilerTwoPort.mos"
-        "Simulate and plot"));
+        "Simulate and plot"),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end SteamBoilerTwoPort;

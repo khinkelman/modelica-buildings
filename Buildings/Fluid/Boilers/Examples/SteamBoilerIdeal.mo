@@ -44,6 +44,10 @@ model SteamBoilerIdeal "Test model for the ideal steam boiler"
     addPowerToMedium=false,
     nominalValuesDefineDefaultPressureCurve=true)       "Pump"
     annotation (Placement(transformation(extent={{-50,-10},{-30,10}})));
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(boi.port_b, steSin.ports[1])
     annotation (Line(points={{40,0},{60,0}}, color={0,127,255}));
@@ -59,5 +63,9 @@ equation
         coordinateSystem(preserveAspectRatio=false)),
 experiment(Tolerance=1e-6, StopTime=100.0),
 __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Fluid/Boilers/Examples/SteamBoilerIdeal.mos"
-        "Simulate and plot"));
+        "Simulate and plot"),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end SteamBoilerIdeal;

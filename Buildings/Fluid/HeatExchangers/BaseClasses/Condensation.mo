@@ -34,7 +34,10 @@ model Condensation
 
   Modelica.SIunits.SpecificEnthalpy hSte_instream
     "Instreaming enthalpy at port_a";
-
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   // Temperature
   Ta= Medium_a.temperature(
@@ -134,5 +137,9 @@ equation
           fillPattern=FillPattern.HorizontalCylinder,
           fillColor={0,127,255},
           textString="%name")}),                                 Diagram(
-        coordinateSystem(preserveAspectRatio=false)));
+        coordinateSystem(preserveAspectRatio=false)),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end Condensation;

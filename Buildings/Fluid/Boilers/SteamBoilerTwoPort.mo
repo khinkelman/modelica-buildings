@@ -4,6 +4,10 @@ model SteamBoilerTwoPort
   extends Buildings.Fluid.Interfaces.PartialTwoPortTwoMedium;
   extends Buildings.Fluid.Boilers.BaseClasses.PartialSteamBoiler;
 
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(temSen_out.port_b, port_b) annotation (Line(points={{90,0},{90,0},{90,
           0},{100,0}}, color={0,127,255}));
@@ -25,5 +29,9 @@ equation
           fillColor={255,0,0},
           fillPattern=FillPattern.Solid)}),                      Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,
-            100}})));
+            100}})),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end SteamBoilerTwoPort;

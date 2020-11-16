@@ -115,6 +115,10 @@ model SteamBoilerFourPort
   Modelica.Blocks.Sources.Constant off(k=0.2898)
     "Offset (determined empirically)"
     annotation (Placement(transformation(extent={{-70,-60},{-50,-40}})));
+initial equation
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
 equation
   connect(pSet.y, steSin.p_in) annotation (Line(points={{101,70},{110,70},{110,28},
           {102,28}},
@@ -158,5 +162,9 @@ equation
         coordinateSystem(preserveAspectRatio=false, extent={{-120,-120},{120,120}})),
 experiment(Tolerance=1e-6, StopTime=3600.0),
 __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Fluid/Boilers/Examples/SteamBoilerFourPort.mos"
-        "Simulate and plot"));
+        "Simulate and plot"),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end SteamBoilerFourPort;

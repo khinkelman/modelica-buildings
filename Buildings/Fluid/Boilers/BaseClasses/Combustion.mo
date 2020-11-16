@@ -34,7 +34,9 @@ protected
   Modelica.SIunits.SpecificEnthalpy hFluGas "Flue gas specific enthalpy";
 
 initial equation
-
+  Modelica.Utilities.Streams.print(
+    "Warning:\n  In " + getInstanceName() +
+    ": This model is a beta version and is not fully validated yet.");
   if  fluGasTCurve == Buildings.Fluid.Types.EfficiencyCurves.QuadraticLinear then
     assert(size(a, 1) == 6,
     "The combustion model has the leaving flue gas temperature curve set to 
@@ -108,5 +110,9 @@ equation
           lineColor={238,46,47},
           fillColor={238,46,47},
           fillPattern=FillPattern.Sphere)}),                     Diagram(
-        coordinateSystem(preserveAspectRatio=false)));
+        coordinateSystem(preserveAspectRatio=false)),
+    Documentation(info="<html>
+<p><b><span style=\"font-size: 11pt; color: #ff0000;\">
+This model is a beta version and is not fully validated yet.</span></b></p>
+</html>"));
 end Combustion;
