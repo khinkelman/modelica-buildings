@@ -61,6 +61,7 @@ model SteamBoilerFourPort
     annotation (Placement(transformation(extent={{-70,10},{-50,30}})));
   Movers.FlowControlled_m_flow pum(
     redeclare package Medium = MediumWat,
+    energyDynamics=Modelica.Fluid.Types.Dynamics.FixedInitial,
     m_flow_nominal=m1_flow_nominal,
     nominalValuesDefineDefaultPressureCurve=true) "Pump"
     annotation (Placement(transformation(extent={{-30,10},{-10,30}})));
@@ -84,6 +85,7 @@ model SteamBoilerFourPort
     nPorts=1) "Air source"
     annotation (Placement(transformation(extent={{-70,-100},{-50,-80}})));
   Buildings.Fluid.Boilers.SteamBoilerFourPort boi(
+    energyDynamics=Modelica.Fluid.Types.Dynamics.FixedInitial,
     TOut_nominal=TOut_nominal,
     redeclare package MediumWat = MediumWat,
     redeclare package MediumSte = MediumSte,
@@ -100,6 +102,7 @@ model SteamBoilerFourPort
     annotation (Placement(transformation(extent={{40,4},{60,24}})));
   Movers.FlowControlled_m_flow fan(
     redeclare package Medium = MediumFlu,
+    energyDynamics=Modelica.Fluid.Types.Dynamics.FixedInitial,
     m_flow_nominal=m2_flow_nominal,
     nominalValuesDefineDefaultPressureCurve=true) "Fan"
     annotation (Placement(transformation(extent={{-30,-100},{-10,-80}})));

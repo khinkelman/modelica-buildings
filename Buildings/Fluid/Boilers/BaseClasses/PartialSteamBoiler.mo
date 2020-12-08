@@ -145,6 +145,8 @@ partial model PartialSteamBoiler
 
   Movers.FlowControlled_dp dpCon(
     redeclare package Medium = Medium_a,
+    energyDynamics=energyDynamics,
+    massDynamics=massDynamics,
     m_flow_nominal=m_flow_nominal,
     final show_T=show_T,
     addPowerToMedium=false,
