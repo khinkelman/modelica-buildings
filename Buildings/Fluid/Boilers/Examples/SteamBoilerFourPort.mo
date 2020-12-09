@@ -29,15 +29,36 @@ model SteamBoilerFourPort
   parameter Modelica.SIunits.Temperature TOut_nominal = MediumSte.saturationTemperature(pOut_nominal)
     "Nominal temperature leaving the boiler";
 
-  parameter Modelica.SIunits.SpecificHeatCapacityAtConstantPressure cp_default=
+  parameter Modelica.SIunits.SpecificHeatCapacityAtConstantPressure cpWat_default=
     MediumWat.specificHeatCapacityCp(MediumWat.setState_pTX(
       T=MediumWat.T_default, p=MediumWat.p_default, X=MediumWat.X_default))
     "Default value for specific heat";
+
+  parameter Modelica.SIunits.SpecificHeatCapacityAtConstantPressure cpFlu_default=
+    MediumFlu.specificHeatCapacityCp(MediumFlu.setState_pTX(
+      T=MediumFlu.T_default, p=MediumFlu.p_default, X=MediumFlu.X_default))
+    "Default value for specific heat";
+
+  parameter Modelica.SIunits.Density dFlu_default=
+    MediumFlu.density(MediumFlu.setState_pTX(
+      T=MediumFlu.T_default, p=MediumFlu.p_default, X=MediumFlu.X_default))
+    "Default value for density";
 
   parameter Modelica.SIunits.SpecificEnthalpy dh_nominal=
     MediumSte.specificEnthalpy(MediumSte.setState_pTX(pOut_nominal,TOut_nominal)) -
     MediumWat.specificEnthalpy(MediumWat.setState_pTX(pOut_nominal,TIn_nominal))
    "Nominal change in enthalpy of boiler";
+
+  parameter Real ratAirFue = 10
+    "Air-to-fuel ratio (by volume)";
+  parameter Modelica.SIunits.PressureDifference dpFan_nominal = 46.2*1000
+    "Nominal pressure";
+  parameter Buildings.Fluid.Movers.Data.Generic perFan(
+    pressure=
+          Buildings.Fluid.Movers.BaseClasses.Characteristics.flowParameters(
+          V_flow=m2_flow_nominal/dFlu_default*{0.2,0.6,1.0,1.2},
+          dp=(dpFan_nominal+60000+6000)*{1.2,1.1,1.0,0.6}))
+    "Performance data for condenser water pumps";
 
   Sources.Boundary_pT steSin(
     redeclare package Medium = MediumSte,
@@ -46,7 +67,7 @@ model SteamBoilerFourPort
     nPorts=1) "Steam sink"
     annotation (Placement(transformation(extent={{100,10},{80,30}})));
   Modelica.Blocks.Sources.Constant pSet(k=pOut_nominal)
-                                                   "Steam pressure setpoint"
+    "Steam pressure setpoint"
     annotation (Placement(transformation(extent={{80,60},{100,80}})));
   FixedResistances.PressureDrop dpWat(
     redeclare package Medium = MediumWat,
@@ -81,7 +102,7 @@ model SteamBoilerFourPort
   Sources.Boundary_pT airSou(redeclare package Medium = MediumFlu,
     p(displayUnit="Pa"),
     nPorts=1) "Air source"
-    annotation (Placement(transformation(extent={{-70,-100},{-50,-80}})));
+    annotation (Placement(transformation(extent={{-40,-100},{-20,-80}})));
   Buildings.Fluid.Boilers.SteamBoilerFourPort boi(
     energyDynamics=Modelica.Fluid.Types.Dynamics.FixedInitial,
     TOut_nominal=TOut_nominal,
@@ -98,25 +119,28 @@ model SteamBoilerFourPort
     fue=Data.Fuels.NaturalGasLowerHeatingValue())
                                            "Steam boiler"
     annotation (Placement(transformation(extent={{40,4},{60,24}})));
-  Movers.FlowControlled_m_flow fan(
-    redeclare package Medium = MediumFlu,
-    energyDynamics=Modelica.Fluid.Types.Dynamics.FixedInitial,
-    m_flow_nominal=m2_flow_nominal,
-    nominalValuesDefineDefaultPressureCurve=true) "Fan"
-    annotation (Placement(transformation(extent={{-30,-100},{-10,-80}})));
   FixedResistances.PressureDrop dpAir(
     redeclare package Medium = MediumFlu,
     m_flow_nominal=m2_flow_nominal,
     dp_nominal(displayUnit="Pa") = 6000) "Pressure drop in air side"
-    annotation (Placement(transformation(extent={{0,-100},{20,-80}})));
-  Modelica.Blocks.Math.Gain gai(k=3.7871) "Gain"
-    annotation (Placement(transformation(extent={{-68,-20},{-48,0}})));
-  Modelica.Blocks.Math.Add m2Act_flow
-    "Actual mass flow rate for air side (determined empirically)"
-    annotation (Placement(transformation(extent={{-30,-40},{-10,-20}})));
-  Modelica.Blocks.Sources.Constant off(k=0.2898)
-    "Offset (determined empirically)"
-    annotation (Placement(transformation(extent={{-70,-60},{-50,-40}})));
+    annotation (Placement(transformation(extent={{40,-100},{60,-80}})));
+  Modelica.Blocks.Sources.Constant ratAirFueSet(k=ratAirFue)
+    "Setpoint for ratio of air to fuel"
+    annotation (Placement(transformation(extent={{-112,-60},{-92,-40}})));
+  Controls.Continuous.LimPID           conFan(Ti=60)
+                                              "Fan controller"
+    annotation (Placement(transformation(extent={{-80,-40},{-60,-60}})));
+  Movers.SpeedControlled_y fan(redeclare package Medium = MediumFlu,
+    m_flow_small=1E-4*abs(m2_flow_nominal),
+    per=perFan)                                                      "Fan"
+    annotation (Placement(transformation(extent={{10,-100},{30,-80}})));
+  Modelica.Blocks.Logical.Switch swi "Switch"
+    annotation (Placement(transformation(extent={{-20,-60},{0,-40}})));
+  Modelica.Blocks.Logical.GreaterThreshold graZer(threshold=-1e-12)
+    "Greater than zero threshold"
+    annotation (Placement(transformation(extent={{-60,-20},{-40,0}})));
+  Modelica.Blocks.Sources.Constant off(k=0) "Fan off state"
+    annotation (Placement(transformation(extent={{-80,-100},{-60,-80}})));
 equation
   connect(pSet.y, steSin.p_in) annotation (Line(points={{101,70},{110,70},{110,28},
           {102,28}},
@@ -133,29 +157,35 @@ equation
   connect(y.y, m1Act_flow.u1) annotation (Line(points={{-89,90},{-32,90},{-32,76},
           {-22,76}}, color={0,0,127}));
   connect(dpWat.port_b, boi.port_a1)
-    annotation (Line(points={{20,20},{40,20}},
+    annotation (Line(points={{20,20},{30,20},{30,20},{40,20}},
                                             color={0,127,255}));
   connect(boi.port_b1, steSin.ports[1])
-    annotation (Line(points={{60,20},{80,20}},
+    annotation (Line(points={{60,20},{70,20},{70,20},{80,20}},
                                              color={0,127,255}));
-  connect(airSou.ports[1], fan.port_a)
-    annotation (Line(points={{-50,-90},{-30,-90}}, color={0,127,255}));
-  connect(fan.port_b, dpAir.port_a)
-    annotation (Line(points={{-10,-90},{0,-90}}, color={0,127,255}));
   connect(y.y, boi.y) annotation (Line(points={{-89,90},{30,90},{30,25},{39,25}},
         color={0,0,127}));
-  connect(y.y, gai.u) annotation (Line(points={{-89,90},{-80,90},{-80,-10},{-70,
-          -10}}, color={0,0,127}));
-  connect(off.y, m2Act_flow.u2) annotation (Line(points={{-49,-50},{-42,-50},{-42,
-          -36},{-32,-36}}, color={0,0,127}));
-  connect(gai.y, m2Act_flow.u1) annotation (Line(points={{-47,-10},{-40,-10},{-40,
-          -24},{-32,-24}}, color={0,0,127}));
-  connect(m2Act_flow.y, fan.m_flow_in) annotation (Line(points={{-9,-30},{0,-30},
-          {0,-70},{-20,-70},{-20,-78}}, color={0,0,127}));
-  connect(fluGasSin.ports[1], boi.port_b2) annotation (Line(points={{30,-20},{
-          36,-20},{36,8},{40,8}}, color={0,127,255}));
-  connect(boi.port_a2, dpAir.port_b) annotation (Line(points={{60,8},{64,8},{64,
-          -90},{20,-90}}, color={0,127,255}));
+  connect(fluGasSin.ports[1], boi.port_b2) annotation (Line(points={{30,-20},{36,
+          -20},{36,8},{40,8}},    color={0,127,255}));
+  connect(boi.port_a2, dpAir.port_b) annotation (Line(points={{60,8},{80,8},{80,
+          -90},{60,-90}}, color={0,127,255}));
+  connect(airSou.ports[1], fan.port_a)
+    annotation (Line(points={{-20,-90},{10,-90}},  color={0,127,255}));
+  connect(fan.port_b, dpAir.port_a)
+    annotation (Line(points={{30,-90},{40,-90}}, color={0,127,255}));
+  connect(boi.ratAirFue, conFan.u_m) annotation (Line(points={{61,5},{70,5},{70,
+          -34},{-70,-34},{-70,-38}}, color={0,0,127}));
+  connect(ratAirFueSet.y, conFan.u_s)
+    annotation (Line(points={{-91,-50},{-82,-50}}, color={0,0,127}));
+  connect(boi.ratAirFue, graZer.u) annotation (Line(points={{61,5},{70,5},{70,
+          -34},{-70,-34},{-70,-10},{-62,-10}}, color={0,0,127}));
+  connect(graZer.y, swi.u2) annotation (Line(points={{-39,-10},{-30,-10},{-30,
+          -50},{-22,-50}}, color={255,0,255}));
+  connect(conFan.y, swi.u1) annotation (Line(points={{-59,-50},{-40,-50},{-40,
+          -42},{-22,-42}}, color={0,0,127}));
+  connect(off.y, swi.u3) annotation (Line(points={{-59,-90},{-50,-90},{-50,-58},
+          {-22,-58}}, color={0,0,127}));
+  connect(swi.y, fan.y)
+    annotation (Line(points={{1,-50},{20,-50},{20,-78}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-120,-120},{120,120}})),
 experiment(Tolerance=1e-6, StopTime=3600.0),
