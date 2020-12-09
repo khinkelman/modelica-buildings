@@ -119,19 +119,15 @@ partial model PartialSteamBoiler
         iconTransformation(extent={{-10,100},{10,120}})));
 
   Buildings.Fluid.MixingVolumes.MixingVolume vol(
-    redeclare final package Medium = Medium_a,
+    redeclare final package Medium = Medium_b,
     V=m_flow_nominal*tau/rho_default,
     final allowFlowReversal=false,
     final mSenFac=1,
     final m_flow_nominal = m_flow_nominal,
     final energyDynamics=energyDynamics,
     final massDynamics=massDynamics,
-    final p_start=p_start,
-    final T_start=T_start,
-    final X_start=X_start,
-    final C_start=C_start,
     nPorts=2)  "Volume for fluid stream"
-     annotation (Placement(transformation(extent={{19,0},{39,-20}})));
+     annotation (Placement(transformation(extent={{41,0},{61,-20}})));
 
   Evaporation eva(
     redeclare package Medium_a = Medium_a,
@@ -141,7 +137,7 @@ partial model PartialSteamBoiler
     TSat=TOut_nominal,
     pSat=pBoi_nominal)
     "Evaporation process"
-    annotation (Placement(transformation(extent={{40,-10},{60,10}})));
+    annotation (Placement(transformation(extent={{20,-10},{40,10}})));
 
   Movers.FlowControlled_dp dpCon(
     redeclare package Medium = Medium_a,
@@ -167,7 +163,7 @@ protected
       T=Medium_a.T_default, p=Medium_a.p_default, X=Medium_a.X_default);
   parameter Medium_b.ThermodynamicState sta_b_default=Medium_b.setState_pTX(
       T=Medium_b.T_default, p=Medium_b.p_default, X=Medium_b.X_default);
-  parameter Modelica.SIunits.Density rho_default=Medium_a.density(sta_a_default)
+  parameter Modelica.SIunits.Density rho_default=Medium_b.density(sta_b_default)
     "Density, used to compute fluid volume";
   parameter Medium_a.ThermodynamicState sta_a_start=Medium_a.setState_pTX(
       T=T_start, p=p_start, X=X_start);
@@ -184,23 +180,12 @@ protected
   parameter Real aQuaLin[6] = if size(a, 1) == 6 then a else fill(0, 6)
   "Auxiliary variable for efficiency curve because quadraticLinear requires exactly 6 elements";
 
-  Buildings.HeatTransfer.Sources.PrescribedHeatFlow preHeaFlo
-    "Prescribed (sensible) heat flow into fluid volume"
-    annotation (Placement(transformation(extent={{-11,-46},{9,-26}})));
   Modelica.Thermal.HeatTransfer.Sensors.TemperatureSensor temSenVol
     "Temperature of fluid volume"
     annotation (Placement(transformation(extent={{50,70},{70,90}})));
-  Modelica.Blocks.Math.Gain cp(k=cp_default) "Specific heat"
-    annotation (Placement(transformation(extent={{-80,-40},{-60,-20}})));
   Modelica.Thermal.HeatTransfer.Components.ThermalConductor UAOve(G=UA)
     "Overall thermal conductance (if heatPort is connected)"
     annotation (Placement(transformation(extent={{-20,70},{0,90}})));
-  Modelica.Blocks.Math.Product QSen_flow_mea
-    "Measured sensible heat transfer rate"
-    annotation (Placement(transformation(extent={{-40,-46},{-20,-26}})));
-  Modelica.Blocks.Math.Add dTSen(k1=-1)
-    "Change in temperature between inflowing and outflowing fluids"
-    annotation (Placement(transformation(extent={{40,-60},{20,-40}})));
   Modelica.Blocks.Sources.RealExpression Q_flow_out(y=QFue_flow)
     "Total heat transfer rate of fuel"
     annotation (Placement(transformation(extent={{60,100},{80,120}})));
@@ -262,7 +247,7 @@ equation
 
   connect(UAOve.port_b, vol.heatPort)
     annotation (Line(
-      points={{0,80},{16,80},{16,-10},{19,-10}},
+      points={{0,80},{16,80},{16,-10},{41,-10}},
       color={191,0,0},
       smooth=Smooth.None));
   connect(UAOve.port_a, heatPort)
@@ -272,7 +257,7 @@ equation
       smooth=Smooth.None));
   connect(heaCapDry.port, vol.heatPort)
     annotation (Line(
-      points={{30,90},{30,80},{16,80},{16,-10},{19,-10}},
+      points={{30,90},{30,80},{16,80},{16,-10},{41,-10}},
       color={191,0,0},
       smooth=Smooth.None));
   connect(temSenVol.T, T)
@@ -280,40 +265,16 @@ equation
       points={{70,80},{110,80}},
       color={0,0,127},
       smooth=Smooth.None));
-  connect(preHeaFlo.port, vol.heatPort)
-    annotation (Line(
-      points={{9,-36},{16,-36},{16,-10},{19,-10}},
-      color={191,0,0},
-      smooth=Smooth.None));
   connect(vol.heatPort, temSenVol.port)
     annotation (Line(
-      points={{19,-10},{16,-10},{16,80},{50,80}},
+      points={{41,-10},{16,-10},{16,80},{50,80}},
       color={191,0,0},
       smooth=Smooth.None));
-  connect(dpCon.port_b, vol.ports[1])
-    annotation (Line(points={{10,0},{27,0}},  color={0,127,255}));
-  connect(vol.ports[2], eva.port_a)
-    annotation (Line(points={{31,0},{40,0}}, color={0,127,255}));
   connect(Q_flow_out.y, Q_flow)
     annotation (Line(points={{81,110},{110,110}},
                                                 color={0,0,127}));
   connect(heatPort, heatPort)
     annotation (Line(points={{0,110},{0,110}}, color={191,0,0}));
-  connect(eva.port_b, temSen_out.port_a)
-    annotation (Line(points={{60,0},{70,0}}, color={0,127,255}));
-  connect(QSen_flow_mea.y, preHeaFlo.Q_flow)
-    annotation (Line(points={{-19,-36},{-11,-36}}, color={0,0,127}));
-  connect(temSen_out.T, dTSen.u2)
-    annotation (Line(points={{80,11},{80,18},{66,18},{66,-56},{42,-56}},
-        color={0,0,127}));
-  connect(senMasFlo.m_flow, cp.u)
-    annotation (Line(points={{-70,11},{-70,20},{-86,20},{-86,-30},{-82,-30}},
-        color={0,0,127}));
-  connect(cp.y, QSen_flow_mea.u1)
-    annotation (Line(points={{-59,-30},{-42,-30}}, color={0,0,127}));
-  connect(dTSen.y, QSen_flow_mea.u2)
-    annotation (Line(points={{19,-50},{-50,-50},{-50,-42},{-42,-42}},
-        color={0,0,127}));
   connect(pOutSet.y, dpSen.u1)
     annotation (Line(points={{-39,50},{-36,50},{-36,46},{-32,46}},
         color={0,0,127}));
@@ -328,11 +289,14 @@ equation
     annotation (Line(points={{-60,0},{-40,0}}, color={0,127,255}));
   connect(temSen_in.port_b, dpCon.port_a)
     annotation (Line(points={{-20,0},{-10,0}}, color={0,127,255}));
-  connect(temSen_in.T, dTSen.u1)
-    annotation (Line(points={{-30,11},{-30,18},{64,18},{64,-44},{42,-44}},
-        color={0,0,127}));
 
 
+  connect(dpCon.port_b, eva.port_a)
+    annotation (Line(points={{10,0},{20,0}}, color={0,127,255}));
+  connect(eva.port_b, vol.ports[1])
+    annotation (Line(points={{40,0},{49,0}}, color={0,127,255}));
+  connect(vol.ports[2], temSen_out.port_a)
+    annotation (Line(points={{53,0},{70,0}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false,
     extent={{-100,-100},{100,100}}),
     graphics={

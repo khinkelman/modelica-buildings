@@ -6,9 +6,8 @@ model SteamBoilerFourPort
   package MediumSte = IBPSA.Media.Steam (
      T_default=173.5+273.15,
      p_default=861844.7) "Steam medium";
-  package MediumWat = IBPSA.Media.Specialized.Water.HighTemperature (
-     T_default=173.5+273.15,
-     p_default=861844.7) "Water medium";
+  package MediumWat = IBPSA.Media.Water (
+     T_default=90+273.15) "Water medium";
   package MediumFlu = Buildings.Media.Air
     "Flue gas assumed to be air";
 
@@ -44,7 +43,7 @@ model SteamBoilerFourPort
     redeclare package Medium = MediumSte,
     use_p_in=true,
     p(displayUnit="Pa"),
-    nPorts=1)            "Steam sink"
+    nPorts=1) "Steam sink"
     annotation (Placement(transformation(extent={{100,10},{80,30}})));
   Modelica.Blocks.Sources.Constant pSet(k=pOut_nominal)
                                                    "Steam pressure setpoint"
@@ -77,8 +76,7 @@ model SteamBoilerFourPort
   Sources.Boundary_pT fluGasSin(
     redeclare package Medium = MediumFlu,
     p(displayUnit="Pa"),
-    nPorts=1)
-    "Flue gas sink"
+    nPorts=1) "Flue gas sink"
     annotation (Placement(transformation(extent={{10,-30},{30,-10}})));
   Sources.Boundary_pT airSou(redeclare package Medium = MediumFlu,
     p(displayUnit="Pa"),
