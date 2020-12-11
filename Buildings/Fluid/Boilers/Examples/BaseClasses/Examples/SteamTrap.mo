@@ -23,8 +23,7 @@ model SteamTrap
     nPorts=1)
             "Source"
     annotation (Placement(transformation(extent={{-80,0},{-60,20}})));
-  Sources.Boundary_pT sin(redeclare package Medium = MediumWat, nPorts=1)
-                                                                "Sink"
+  Sources.Boundary_pT sin(redeclare package Medium = MediumWat, nPorts=1) "Sink"
     annotation (Placement(transformation(extent={{60,0},{40,20}})));
   Modelica.Blocks.Sources.Ramp ram(
     height=m_flow_nominal,

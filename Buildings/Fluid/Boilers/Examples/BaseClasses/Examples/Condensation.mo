@@ -3,13 +3,14 @@ model Condensation
   "Test model for water condensation process"
   extends Modelica.Icons.Example;
 
-  package MediumSte = Buildings.Media.Steam "Steam medium";
+  package MediumSte = Buildings.Media.Steam (
+    p_default=143380) "Steam medium";
   package MediumWat = Buildings.Media.Water "Water medium";
 
   parameter Modelica.SIunits.MassFlowRate m_flow_nominal = 1
     "Nominal mass flow rate";
 
-  parameter Modelica.SIunits.AbsolutePressure pSte=1000000
+  parameter Modelica.SIunits.AbsolutePressure pSte=143380
     "Nominal steam pressure";
   parameter Modelica.SIunits.Temperature TSte=
     MediumSte.saturationTemperature(pSte)
@@ -19,6 +20,7 @@ model Condensation
     redeclare package Medium_a = MediumSte,
     redeclare package Medium_b = MediumWat,
     m_flow_nominal=m_flow_nominal,
+    show_T=true,
     TSat=TSte,
     pSat=pSte)
     "Condensation process"
@@ -38,7 +40,7 @@ model Condensation
   Sources.MassFlowSource_T boundary(
     redeclare package Medium = MediumSte,
     use_m_flow_in=true,
-    T=273.15 + 179.9,
+    T=453.15,
     nPorts=1) annotation (Placement(transformation(extent={{-40,-10},{-20,10}})));
 equation
   connect(con.port_b, watSin.ports[1])

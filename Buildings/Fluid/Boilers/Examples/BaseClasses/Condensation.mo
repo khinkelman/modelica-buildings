@@ -11,8 +11,8 @@ model Condensation
      "Saturation temperature";
   parameter Modelica.SIunits.AbsolutePressure pSat
      "Saturation pressure";
-  parameter Medium_b.SpecificEnthalpy hVap=Medium_b.specificEnthalpy(staSat) -
-    Medium_a.specificEnthalpy(staSat)
+  parameter Medium_b.SpecificEnthalpy hVap=Medium_a.specificEnthalpy(staSat) -
+    Medium_b.specificEnthalpy(staSat)
     "Enthalpy of vaporization, used to compute enthalpy change due to evaporation";
   parameter Medium_b.ThermodynamicState staSat=
      Medium_b.setState_pTX(T=TSat, p=pSat, X={1})

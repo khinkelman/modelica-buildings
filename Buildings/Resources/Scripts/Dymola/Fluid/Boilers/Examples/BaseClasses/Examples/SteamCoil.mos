@@ -1,0 +1,39 @@
+﻿// Simulate
+simulateModel("Buildings.Fluid.Boilers.Examples.BaseClasses.Examples.SteamCoil", stopTime=180, resultFile="SteamCoil");
+// Plot commands
+removePlots(false);
+createPlot(id=1, position={33, 20, 516, 525}, 
+  y={"coi.sta_a.T", "coi.sta_b.T"}, 
+  range={0.0, 180.0, 70.0, 120.0}, 
+  grid=true, 
+  filename="SteamCoil.mat", 
+  colors={{28,108,200}, {238,46,47}}, 
+  displayUnits={"degC", "degC"});
+  createPlot(id=1, position={33, 20, 516, 525}, 
+  y={"coi.port_a.p", "coi.port_b.p"}, 
+  range={0.0, 180.0, 0.8, 1.6}, 
+  grid=true, 
+  subPlot=2, 
+  colors={{28,108,200}, {238,46,47}}, 
+  displayUnits={"bar", "bar"});
+  createPlot(id=1, position={33, 20, 516, 525}, 
+  y={"coi.port_a.h_outflow", "coi.port_b.h_outflow"}, 
+  range={0.0, 180.0, 0.0, 3000000.0}, 
+  grid=true, 
+  subPlot=3, 
+  colors={{28,108,200}, {238,46,47}}, 
+  displayUnits={"J/kg", "J/kg"});
+  createPlot(id=2, position={558, 21, 506, 523}, 
+  y={"coi.QOut_flow", "coi.QLos_flow"}, 
+  range={0.0, 180.0, -2500.0, 500.0}, 
+  grid=true, 
+  colors={{28,108,200}, {238,46,47}}, 
+  displayUnits={"kW", "kW"});
+  createPlot(id=2, position={558, 21, 506, 523}, 
+  y={"pum.m_flow"}, 
+  range={0.0, 180.0, -0.2, 1.2}, 
+  grid=true, 
+  subPlot=2, 
+  colors={{28,108,200}}, 
+  displayUnits={"kg/s"});
+
