@@ -21,9 +21,9 @@ model SteamBoilerSimpleLoop "Loop example based on EnergyPlus"
   parameter Modelica.SIunits.Temperature TSubCoo=278.15
     "Degree of subcooling at the heating coil";
 
-  parameter Modelica.SIunits.MassFlowRate mBoi_flow_nominal
+  parameter Modelica.SIunits.MassFlowRate mBoi_flow_nominal=QBoi_flow_nominal/hfg
     "Nominal mass flow rate of boiler";
-  parameter Modelica.SIunits.HeatFlowRate QBoi_flow_nominal
+  parameter Modelica.SIunits.HeatFlowRate QBoi_flow_nominal=57130.65
     "Nominal heat flow rate of boiler";
   parameter Modelica.SIunits.MassFlowRate mCoi_flow_nominal=mBoi_flow_nominal
     "Nominal mass flow rate of Coil";
