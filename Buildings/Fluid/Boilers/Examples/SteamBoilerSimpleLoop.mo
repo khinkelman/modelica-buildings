@@ -117,7 +117,7 @@ equation
   connect(y1.y, pro.u2) annotation (Line(points={{-69,-40},{-60,-40},{-60,34},{-52,
           34}}, color={0,0,127}));
   connect(pro.y, boi.y)
-    annotation (Line(points={{-29,40},{38,40},{38,39}}, color={0,0,127}));
+    annotation (Line(points={{-29,40},{38,40},{38,38}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),
     experiment(Tolerance=1e-6, StopTime=3600.0),
