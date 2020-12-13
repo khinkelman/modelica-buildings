@@ -1,0 +1,60 @@
+Event iteration details;;;;Event summary;;;Triggering expression;;Bifurcation warning
+Iteration;Event type;Expression;Result;Time;Type(s) logged in dslog;Minor/Failed;Expression;Crossing;Expression;Crossing;Residual
+
+1;4;boi.dpSen.y >= -0.001;true
+1;4;y1.a;0.0005555555555555556
+1;4;y1.last;2
+1;4;y1.nextEvent;1800
+1;4;y1.nextEventScaled;1800
+1;4;y2.a;0.0001666666666666667
+1;4;y2.last;2
+1;4;y2.nextEvent;1200
+1;4;y2.nextEventScaled;1200
+1;4;boi.eva.Ta < 383.1508373789789;true
+1;4;coi2.con.Ta > 383.1508373789789;true
+1;4;coi1.con.Ta > 383.1508373789789;true
+1;4;y1.a;0.0005555555555555556
+1;4;y1.last;2
+1;4;y1.nextEvent;1800
+1;4;y1.nextEventScaled;1800
+1;4;y2.a;0.0001666666666666667
+1;4;y2.last;2
+1;4;y2.nextEvent;1200
+1;4;y2.nextEventScaled;1200
+;;;;0;Initialization;0
+
+1;1;time >= 1200;
+1;4;y2.a;0
+1;4;y2.b;0.8
+1;4;y2.last;4
+1;4;y2.nextEvent;3000
+1;4;y2.nextEventScaled;3000
+;;;;1200;1;0
+;;;;;;;Time event;
+
+1;1;time >= 1800;
+1;4;y1.a;0
+1;4;y1.last;4
+1;4;y1.nextEvent;2400
+1;4;y1.nextEventScaled;2400
+;;;;1800;1;0
+;;;;;;;Time event;
+
+1;1;time >= 2400;
+1;4;y1.b;1
+1;4;y1.last;6
+1;4;y1.nextEvent;2399.99999999976
+1;4;y1.nextEventScaled;2399.99999999976
+;;;;2400;1;0
+;;;;;;;Time event;
+
+1;1;time >= 3000;
+1;4;y2.b;0.3
+1;4;y2.last;6
+1;4;y2.nextEvent;2999.9999999997
+1;4;y2.nextEventScaled;2999.9999999997
+;;;;3000;1;0
+;;;;;;;Time event;
+
+;;;;3600;Termination;0
+

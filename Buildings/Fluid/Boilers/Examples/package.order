@@ -3,5 +3,6 @@ BoilerPolynomialClosedLoop
 SteamBoilerTwoPort
 SteamBoilerSimple
 SteamBoilerSimpleLoop
+SteamBoilerSimpleLoopBS21
 SteamBoilerFourPort
 BaseClasses
