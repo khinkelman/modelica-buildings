@@ -1,0 +1,53 @@
+﻿// Simulate
+simulateModel("Buildings.Fluid.Boilers.Examples.SteamBoilerSimpleLoop", stopTime=3600, resultFile="SteamBoilerSimpleLoop");
+// Plot commands
+removePlots(false);
+createPlot(id=1, position={0, 0, 914, 614}, 
+  y={"boi.m_flow"}, 
+  range={0.0, 4000.0, -0.005, 0.03}, 
+  erase=false, 
+  grid=true, 
+  filename="SteamBoilerSimpleLoop.mat", 
+  colors={{28,108,200}}, 
+  displayUnits={"kg/s"});
+createPlot(id=1, position={0, 0, 914, 614}, 
+  y={"coi1.m_flow"}, 
+  range={0.0, 4000.0, -0.002, 0.01}, 
+  erase=false, 
+  grid=true, 
+  subPlot=201, 
+  colors={{28,108,200}}, 
+  displayUnits={"kg/s"});
+createPlot(id=1, position={0, 0, 914, 614}, 
+  y={"coi2.m_flow"}, 
+  range={0.0, 4000.0, -0.005, 0.02}, 
+  erase=false, 
+  grid=true, 
+  subPlot=301, 
+  colors={{28,108,200}}, 
+  displayUnits={"kg/s"});
+createPlot(id=1, position={0, 0, 914, 614}, 
+  y={"boi.QFue_flow", "boi.QOut_flow"}, 
+  range={0.0, 4000.0, -10000.0, 80000.0}, 
+  erase=false, 
+  grid=true, 
+  subPlot=102, 
+  colors={{28,108,200}, {238,46,47}}, 
+  displayUnits={"W", "W"});
+createPlot(id=1, position={0, 0, 914, 614}, 
+  y={"coi1.QOut_flow"}, 
+  range={0.0, 4000.0, -25.0, 5.0}, 
+  erase=false, 
+  grid=true, 
+  subPlot=202, 
+  colors={{28,108,200}}, 
+  displayUnits={"kW"});
+createPlot(id=1, position={0, 0, 914, 614}, 
+  y={"coi2.QOut_flow"}, 
+  range={0.0, 4000.0, -50.0, 10.0}, 
+  erase=false, 
+  grid=true, 
+  subPlot=302, 
+  colors={{28,108,200}}, 
+  displayUnits={"kW"});
+

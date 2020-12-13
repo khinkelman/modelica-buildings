@@ -82,6 +82,11 @@ model SteamBoilerSimple "Simple steam boiler based on EnergyPlus"
     annotation (Placement(transformation(extent={{60,40},{80,60}})));
   Modelica.Blocks.Interfaces.RealInput y(min=0, max=1) "Part load ratio"
     annotation (Placement(transformation(extent={{-140,60},{-100,100}})));
+  Sources.Boundary_pT exp(
+    redeclare package Medium = Medium_a,
+    p(displayUnit="Pa") = pSat,
+    nPorts=1) "Expansion tank"
+    annotation (Placement(transformation(extent={{-18,-50},{2,-30}})));
 protected
   Sensors.Pressure senPre(redeclare package Medium = Medium_a)
     "Measured absolute pressure of inflowing fluid"
@@ -155,6 +160,8 @@ equation
     annotation (Line(points={{81,90},{110,90}}, color={0,0,127}));
   connect(HeaFloFue.y, QFueOut_flow)
     annotation (Line(points={{81,70},{110,70}}, color={0,0,127}));
+  connect(exp.ports[1], eva.port_a) annotation (Line(points={{2,-40},{10,-40},{10,
+          0},{20,0}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Text(
           extent={{-149,-124},{151,-164}},
