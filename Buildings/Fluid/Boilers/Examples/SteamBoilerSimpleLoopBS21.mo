@@ -40,6 +40,17 @@ model SteamBoilerSimpleLoopBS21 "Loop example based on EnergyPlus"
 
   parameter Modelica.SIunits.PressureDifference dp_nominal=10000
     "Pressure drop at nominal mass flow rate in district network";
+
+   // Table parameters
+  parameter Boolean tableOnFile=true
+    "= true, if table is defined on file or in function usertab";
+  parameter String tableName="HeatingLoadProfiles"
+    "Table name on file or in function usertab (see docu)";
+  parameter Modelica.Blocks.Types.Smoothness smoothness=Modelica.Blocks.Types.Smoothness.LinearSegments
+    "Smoothness of table interpolation";
+  parameter Modelica.SIunits.Time timeScale(
+    min=Modelica.Constants.eps)=1 "Time scale of first table column";
+
   .Buildings.Fluid.Boilers.SteamBoilerSimple boi(
     redeclare package Medium_a = MediumWat,
     redeclare package Medium_b = MediumSte,
@@ -136,6 +147,17 @@ model SteamBoilerSimpleLoopBS21 "Loop example based on EnergyPlus"
     m_flow_nominal=mBoi_flow_nominal*{1,1/2,-1/2},
     dp_nominal=6000*{1,1,-1}) "Junction"
     annotation (Placement(transformation(extent={{-60,20},{-40,40}})));
+  Modelica.Blocks.Sources.CombiTimeTable QHea(
+    tableOnFile=tableOnFile,
+    tableName=tableName,
+    fileName=ModelicaServices.ExternalReferences.loadResource(
+        "modelica://Buildings/Resources/Data/Fluid/Boilers/Examples/SteamBoilerSimpleLoopBS21/HeatingLoadProfiles.csv"),
+
+    columns={2,10},
+    smoothness=smoothness,
+    timeScale=timeScale) "Heating demand"
+    annotation (Placement(transformation(extent={{-140,70},{-120,90}})));
+
 equation
   connect(preDro.port_b, boi.port_a)
     annotation (Line(points={{-10,30},{10,30}},color={0,127,255}));
@@ -186,6 +208,6 @@ equation
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-160,-100},{160,100}})),
     experiment(Tolerance=1e-6, StopTime=3600.0),
-    __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Fluid/Boilers/Examples/SteamBoilerSimpleLoop.mos"
+    __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Fluid/Boilers/Examples/SteamBoilerSimpleLoopBS21.mos"
         "Simulate and plot"));
 end SteamBoilerSimpleLoopBS21;

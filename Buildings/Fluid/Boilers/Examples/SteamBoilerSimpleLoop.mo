@@ -2,7 +2,7 @@ within Buildings.Fluid.Boilers.Examples;
 model SteamBoilerSimpleLoop "Loop example based on EnergyPlus"
   extends Modelica.Icons.Example;
 
-  package MediumSte = IBPSA.Media.Steam (
+  package MediumSte = Buildings.Media.Steam (
      T_default=110+273.15,
      p_default=143380) "Steam medium";
   package MediumWat = Buildings.Media.Water "Water medium";
