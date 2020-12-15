@@ -76,6 +76,8 @@ model SteamBoilerSimple "Simple steam boiler based on EnergyPlus"
     energyDynamics=energyDynamics,
     massDynamics=massDynamics,
       m_flow_nominal=m_flow_nominal,
+    addPowerToMedium=false,
+    nominalValuesDefineDefaultPressureCurve=false,
     tau=tau)                         "Pump"
     annotation (Placement(transformation(extent={{-20,-10},{0,10}})));
   Modelica.Blocks.Math.Product pro "Product"
