@@ -5,10 +5,12 @@ model SteamCoil "Steam coil based on EnergyPlus"
      "Saturation temperature";
   parameter Modelica.SIunits.AbsolutePressure pSat
      "Saturation pressure";
-  parameter Modelica.SIunits.Temperature TSubCoo=5
+  parameter Modelica.SIunits.TemperatureDifference TSubCoo=5
     "Degree of subcooling at the heating coil";
-  parameter Modelica.SIunits.Temperature TLooSubCoo=25
+  parameter Modelica.SIunits.TemperatureDifference TLooSubCoo=15
     "Degree of subcooling at loop";
+  parameter Modelica.SIunits.PressureDifference dp_nominal = 6000
+    "Nominal pressure difference";
 
   // Dynamics
   parameter Modelica.SIunits.Time tau = 30
@@ -30,7 +32,7 @@ model SteamCoil "Steam coil based on EnergyPlus"
     redeclare package Medium = Medium_b,
     m_flow_nominal=m_flow_nominal,
     show_T=show_T,
-    dp_nominal=6000,
+    dp_nominal=dp_nominal/2,
     tau=tau,
     energyDynamics=energyDynamics) "Subcool the condensate"
     annotation (Placement(transformation(extent={{30,-10},{50,10}})));
@@ -47,7 +49,7 @@ model SteamCoil "Steam coil based on EnergyPlus"
     annotation (Placement(transformation(extent={{70,80},{90,100}})));
   Modelica.Blocks.Math.Add TOutHex(
     k1=-1,
-    y(unit = "degC"))
+    y(unit = "K"))
                  "Heat exchanger outlet temperature"
     annotation (Placement(transformation(extent={{30,20},{50,40}})));
   SteamTrap steTra(
@@ -59,13 +61,13 @@ model SteamCoil "Steam coil based on EnergyPlus"
     redeclare package Medium = Medium_b,
     m_flow_nominal=m_flow_nominal,
     show_T=show_T,
-    dp_nominal=6000,
+    dp_nominal=dp_nominal/2,
     tau=tau,
     energyDynamics=energyDynamics) "Loop Subcooling"
     annotation (Placement(transformation(extent={{30,-90},{50,-70}})));
   Modelica.Blocks.Math.Add TOutCoi(
     k1=-1,
-    y(unit = "degC")) "Coil outlet temperature"
+    y(unit = "K")) "Coil outlet temperature"
     annotation (Placement(transformation(extent={{30,-60},{50,-40}})));
   Modelica.Blocks.Interfaces.RealOutput QLos_flow(
     final quantity="HeatFlowRate",
