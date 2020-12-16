@@ -19,6 +19,9 @@ model SteamCoil "Steam coil based on EnergyPlus"
   parameter Modelica.Fluid.Types.Dynamics energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState
     "Type of energy balance: dynamic (3 initialization options) or steady state"
     annotation(Evaluate=true, Dialog(tab = "Dynamics", group="Equations"));
+  parameter Modelica.Fluid.Types.Dynamics massDynamics=energyDynamics
+    "Type of mass balance: dynamic (3 initialization options) or steady state"
+    annotation(Evaluate=true, Dialog(tab = "Dynamics", group="Equations"));
 
   Condensation con(
     redeclare package Medium_a = Medium_a,
@@ -56,7 +59,7 @@ model SteamCoil "Steam coil based on EnergyPlus"
     redeclare package Medium = Medium_b,
     m_flow_nominal=m_flow_nominal,
     show_T=show_T) "Steam trap"
-    annotation (Placement(transformation(extent={{-50,-90},{-30,-70}})));
+    annotation (Placement(transformation(extent={{-80,-90},{-60,-70}})));
   HeatExchangers.SensibleCooler_T subCooLoo(
     redeclare package Medium = Medium_b,
     m_flow_nominal=m_flow_nominal,
@@ -98,6 +101,19 @@ public
       m_flow_nominal=m_flow_nominal,
     T_start=373.15)                  "Temperature sensor"
     annotation (Placement(transformation(extent={{-10,-90},{10,-70}})));
+  MixingVolumes.MixingVolume volWat(
+    redeclare package Medium = Medium_b,
+    energyDynamics=energyDynamics,
+    massDynamics=massDynamics,
+    m_flow_nominal=m_flow_nominal,
+    V=m_flow_nominal*tau/rho_b_default,
+    nPorts=2) "Condensate water volume"
+    annotation (Placement(transformation(extent={{-40,-80},{-20,-60}})));
+protected
+  parameter Medium_b.ThermodynamicState sta_b_default=Medium_b.setState_pTX(
+      T=Medium_b.T_default, p=Medium_b.p_default, X=Medium_b.X_default);
+  parameter Modelica.SIunits.Density rho_b_default=Medium_b.density(sta_b_default)
+    "Density, used to compute fluid volume";
 equation
   connect(port_a, senMasFlo.port_a)
     annotation (Line(points={{-100,0},{-80,0}}, color={0,127,255}));
@@ -124,10 +140,8 @@ equation
     annotation (Line(points={{10,0},{30,0}}, color={0,127,255}));
   connect(TOutHex.y, subCoo.TSet) annotation (Line(points={{51,30},{56,30},{56,14},
           {20,14},{20,8},{28,8}}, color={0,0,127}));
-  connect(subCoo.port_b, steTra.port_a) annotation (Line(points={{50,0},{54,0},
-          {54,-20},{-54,-20},{-54,-80},{-50,-80}},color={0,127,255}));
-  connect(steTra.port_b, temSen1.port_a)
-    annotation (Line(points={{-30,-80},{-10,-80}}, color={0,127,255}));
+  connect(subCoo.port_b, steTra.port_a) annotation (Line(points={{50,0},{50,-20},
+          {-84,-20},{-84,-80},{-80,-80}},         color={0,127,255}));
   connect(temSen1.port_b, subCooLoo.port_a)
     annotation (Line(points={{10,-80},{30,-80}}, color={0,127,255}));
   connect(subCooLoo.port_b, port_b) annotation (Line(points={{50,-80},{80,-80},{
@@ -141,11 +155,15 @@ equation
   connect(QLos_flow, QLos_flow)
     annotation (Line(points={{110,40},{110,40}}, color={0,0,127}));
   connect(addLos.u1, steTra.QLos_flow) annotation (Line(points={{68,46},{62,46},
-          {62,-28},{-20,-28},{-20,-73},{-29,-73}}, color={0,0,127}));
+          {62,-30},{-56,-30},{-56,-73},{-59,-73}}, color={0,0,127}));
   connect(subCooLoo.Q_flow, addLos.u2) annotation (Line(points={{51,-72},{64,
           -72},{64,34},{68,34}}, color={0,0,127}));
   connect(addLos.y, QLos_flow) annotation (Line(points={{91,40},{96,40},{96,40},
           {110,40}}, color={0,0,127}));
+  connect(steTra.port_b, volWat.ports[1])
+    annotation (Line(points={{-60,-80},{-32,-80}}, color={0,127,255}));
+  connect(volWat.ports[2], temSen1.port_a)
+    annotation (Line(points={{-28,-80},{-10,-80}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
           extent={{-80,80},{80,-80}},

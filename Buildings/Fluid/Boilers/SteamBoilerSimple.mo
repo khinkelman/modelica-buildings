@@ -71,7 +71,7 @@ model SteamBoilerSimple "Simple steam boiler based on EnergyPlus"
     m_flow_nominal=m_flow_nominal,
     TSat=TSat,
     pSat=pSat)                     "Evaporation"
-    annotation (Placement(transformation(extent={{20,-10},{40,10}})));
+    annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
   Movers.FlowControlled_dp pum(redeclare package Medium = Medium_a,
     energyDynamics=energyDynamics,
     massDynamics=massDynamics,
@@ -79,16 +79,18 @@ model SteamBoilerSimple "Simple steam boiler based on EnergyPlus"
     addPowerToMedium=false,
     nominalValuesDefineDefaultPressureCurve=false,
     tau=tau)                         "Pump"
-    annotation (Placement(transformation(extent={{-20,-10},{0,10}})));
+    annotation (Placement(transformation(extent={{-40,-10},{-20,10}})));
   Modelica.Blocks.Math.Product pro "Product"
     annotation (Placement(transformation(extent={{60,40},{80,60}})));
   Modelica.Blocks.Interfaces.RealInput y(min=0, max=1) "Part load ratio"
     annotation (Placement(transformation(extent={{-140,60},{-100,100}})));
-  Sources.Boundary_pT exp(
-    redeclare package Medium = Medium_a,
-    p(displayUnit="Pa") = pSat,
-    nPorts=1) "Expansion tank"
-    annotation (Placement(transformation(extent={{-18,-50},{2,-30}})));
+  MixingVolumes.MixingVolume volSte(redeclare package Medium = Medium_b,
+    energyDynamics=energyDynamics,
+    massDynamics=massDynamics,
+      m_flow_nominal=m_flow_nominal,
+    V=m_flow_nominal*tau/rho_b_default,
+    nPorts=2)                        "Steam volume"
+    annotation (Placement(transformation(extent={{20,0},{40,20}})));
 protected
   Sensors.Pressure senPre(redeclare package Medium = Medium_a)
     "Measured absolute pressure of inflowing fluid"
@@ -114,7 +116,10 @@ protected
   parameter Real eta_nominal(fixed=false, start=0.9) "Boiler efficiency at nominal condition";
   parameter Real aQuaLin[6] = if size(a, 1) == 6 then a else fill(0, 6)
   "Auxiliary variable for efficiency curve because quadraticLinear requires exactly 6 elements";
-
+  parameter Medium_b.ThermodynamicState sta_b_default=Medium_b.setState_pTX(
+      T=Medium_b.T_default, p=Medium_b.p_default, X=Medium_b.X_default);
+  parameter Modelica.SIunits.Density rho_b_default=Medium_b.density(sta_b_default)
+    "Density, used to compute fluid volume";
 initial equation
   // Boiler efficiency
   if  effCur == Buildings.Fluid.Types.EfficiencyCurves.QuadraticLinear then
@@ -137,9 +142,10 @@ initial equation
 equation
   assert(eta > 0.001, "Efficiency curve is wrong.");
   connect(port_a, pum.port_a)
-    annotation (Line(points={{-100,0},{-20,0}}, color={0,127,255}));
+    annotation (Line(points={{-100,0},{-40,0}}, color={0,127,255}));
   connect(pum.port_b, eva.port_a)
-    annotation (Line(points={{0,0},{20,0}}, color={0,127,255}));
+    annotation (Line(points={{-20,0},{-10,0}},
+                                            color={0,127,255}));
   connect(senPre.port, port_a)
     annotation (Line(points={{-70,20},{-70,0},{-100,0}}, color={0,127,255}));
   connect(pSteSet.y, dpSen.u1) annotation (Line(points={{-59,50},{-50,50},{-50,56},
@@ -147,23 +153,24 @@ equation
   connect(dpSen.u2, senPre.p) annotation (Line(points={{-42,44},{-50,44},{-50,30},
           {-59,30}}, color={0,0,127}));
   connect(dpSen.y, pum.dp_in)
-    annotation (Line(points={{-19,50},{-10,50},{-10,12}}, color={0,0,127}));
-  connect(eva.port_b, senMasFlo.port_a)
-    annotation (Line(points={{40,0},{60,0}}, color={0,127,255}));
+    annotation (Line(points={{-19,50},{-14,50},{-14,30},{-30,30},{-30,12}},
+                                                          color={0,0,127}));
   connect(senMasFlo.port_b, port_b)
     annotation (Line(points={{80,0},{100,0},{100,0}}, color={0,127,255}));
   connect(pro.u1, eva.dh)
-    annotation (Line(points={{58,56},{44,56},{44,6},{41,6}}, color={0,0,127}));
-  connect(senMasFlo.m_flow, pro.u2) annotation (Line(points={{70,11},{70,20},{48,
-          20},{48,44},{58,44}}, color={0,0,127}));
+    annotation (Line(points={{58,56},{14,56},{14,6},{11,6}}, color={0,0,127}));
+  connect(senMasFlo.m_flow, pro.u2) annotation (Line(points={{70,11},{70,20},{52,
+          20},{52,44},{58,44}}, color={0,0,127}));
   connect(pro.y, QOut_flow)
     annotation (Line(points={{81,50},{110,50}}, color={0,0,127}));
   connect(boiEff.y, etaOut)
     annotation (Line(points={{81,90},{110,90}}, color={0,0,127}));
   connect(HeaFloFue.y, QFueOut_flow)
     annotation (Line(points={{81,70},{110,70}}, color={0,0,127}));
-  connect(exp.ports[1], eva.port_a) annotation (Line(points={{2,-40},{10,-40},{10,
-          0},{20,0}}, color={0,127,255}));
+  connect(eva.port_b, volSte.ports[1])
+    annotation (Line(points={{10,0},{28,0}}, color={0,127,255}));
+  connect(volSte.ports[2], senMasFlo.port_a)
+    annotation (Line(points={{32,0},{60,0}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Text(
           extent={{-149,-124},{151,-164}},
