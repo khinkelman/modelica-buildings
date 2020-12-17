@@ -3,10 +3,10 @@ model SteamBoilerFourPort
   "Test model for the steam boiler with four fluid ports"
   extends Modelica.Icons.Example;
 
-  package MediumSte = IBPSA.Media.Steam (
+  package MediumSte = Buildings.Media.Steam (
      T_default=173.5+273.15,
      p_default=861844.7) "Steam medium";
-  package MediumWat = IBPSA.Media.Water (
+  package MediumWat = Buildings.Media.Water (
      T_default=90+273.15) "Water medium";
   package MediumFlu = Buildings.Media.Air
     "Flue gas assumed to be air";

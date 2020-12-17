@@ -1,0 +1,45 @@
+﻿// Simulate
+simulateModel("Buildings.Fluid.Boilers.Examples.SteamBoilerSimpleClosedLoop", stopTime=3600, resultFile="SteamBoilerSimpleClosedLoop");
+// Plot
+removePlots(false);
+createPlot(id=1, position={14, 38, 1015, 577}, 
+  y={"boi.QOut_flow", "boi.QFueOut_flow"}, 
+  range={0.0, 4000.0, -20.0, 80.0}, 
+  grid=true, 
+  filename="SteamBoilerSimpleClosedLoop.mat", 
+  colors={{28,108,200}, {238,46,47}}, 
+  displayUnits={"kW", "kW"});
+createPlot(id=1, position={14, 38, 1015, 577}, 
+  y={"pum.m_flow"}, 
+  range={0.0, 4000.0, -0.005, 0.03}, 
+  grid=true, 
+  subPlot=201, 
+  colors={{28,108,200}}, 
+  displayUnits={"kg/s"});
+createPlot(id=1, position={14, 38, 1015, 577}, 
+  y={"boi.sta_a.T", "boi.sta_b.T", "coi.sta_b.T"}, 
+  range={0.0, 4000.0, 0.0, 120.0}, 
+  grid=true, 
+  subPlot=301, 
+  colors={{28,108,200}, {238,46,47}, {0,140,72}}, 
+  displayUnits={"degC", "degC", "degC"});
+createPlot(id=1, position={14, 38, 1015, 577}, 
+  y={"coi.QOut_flow", "coi.QLos_flow"}, 
+  range={0.0, 4000.0, -60.0, 10.0}, 
+  grid=true, 
+  subPlot=102, 
+  colors={{28,108,200}, {238,46,47}}, 
+  displayUnits={"kW", "kW"});
+createPlot(id=1, position={14, 38, 1015, 577}, 
+  y={"con.u_s", "con.u_m"}, 
+  range={0.0, 4000.0, -0.005, 0.03}, 
+  grid=true, 
+  subPlot=202, 
+  colors={{28,108,200}, {238,46,47}});
+createPlot(id=1, position={14, 38, 1015, 577}, 
+  y={"boi.port_a.p", "boi.port_b.p", "coi.port_b.p"}, 
+  range={0.0, 4000.0, 0.9, 1.5}, 
+  grid=true, 
+  subPlot=302, 
+  colors={{28,108,200}, {238,46,47}, {0,140,72}}, 
+  displayUnits={"bar", "bar", "bar"});
