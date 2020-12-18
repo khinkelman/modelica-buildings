@@ -1,5 +1,5 @@
 within Buildings.Fluid.Boilers;
-model SteamBoilerSimple "Simple steam boiler based on EnergyPlus"
+model SteamBoilerSimple2 "Simple steam boiler based on EnergyPlus"
   extends Buildings.Fluid.Interfaces.PartialTwoPortTwoMedium;
   parameter Modelica.SIunits.Temperature TSat
      "Saturation temperature";
@@ -18,6 +18,10 @@ model SteamBoilerSimple "Simple steam boiler based on EnergyPlus"
     "Pressure drop at nominal mass flow rate";
   parameter Modelica.SIunits.PressureDifference dpVal_nominal=6000
     "Pressure drop at nominal mass flow rate";
+  parameter Buildings.Fluid.Movers.Data.Generic per(
+   pressure(V_flow={0,m_flow_nominal,2*m_flow_nominal}/1000,
+                   dp=(dpSte_nominal+dpVal_nominal)*{2,1,0}))
+    "Performance data for primary pumps";
 
   // Dynamics
   parameter Modelica.SIunits.Time tau = 30
@@ -88,7 +92,14 @@ model SteamBoilerSimple "Simple steam boiler based on EnergyPlus"
     m_flow_nominal=m_flow_nominal,
     TSat=TSat,
     pSat=pSat)                     "Evaporation"
-    annotation (Placement(transformation(extent={{0,-10},{20,10}})));
+    annotation (Placement(transformation(extent={{20,-10},{40,10}})));
+  Movers.SpeedControlled_y pum(redeclare package Medium = Medium_a,
+    energyDynamics=energyDynamics,
+    massDynamics=massDynamics,
+    per=per,
+    addPowerToMedium=false,
+    tau=tau)                         "Pump"
+    annotation (Placement(transformation(extent={{-80,-10},{-60,10}})));
   Modelica.Blocks.Math.Product pro "Product"
     annotation (Placement(transformation(extent={{60,40},{80,60}})));
   Modelica.Blocks.Interfaces.RealInput y(min=0, max=1) "Part load ratio"
@@ -100,14 +111,26 @@ model SteamBoilerSimple "Simple steam boiler based on EnergyPlus"
       m_flow_nominal=m_flow_nominal,
     V=m_flow_nominal*tau/rho_a_default,
     nPorts=2) "Water volume"
-    annotation (Placement(transformation(extent={{-40,0},{-20,20}})));
+    annotation (Placement(transformation(extent={{-10,0},{10,20}})));
+  Controls.Continuous.LimPID con(
+    controllerType=controllerType,
+    k=k,
+    Ti=Ti,
+    Td=Td)                       "Controller"
+    annotation (Placement(transformation(extent={{-30,40},{-10,60}})));
   FixedResistances.CheckValve cheVal(
     redeclare package Medium = Medium_a,
     m_flow_nominal=m_flow_nominal,
     dpValve_nominal=dpVal_nominal,
     dpFixed_nominal=0)
-    annotation (Placement(transformation(extent={{-80,-10},{-60,10}})));
+    annotation (Placement(transformation(extent={{-40,-10},{-20,10}})));
 protected
+  Sensors.Pressure senPre(redeclare package Medium = Medium_a)
+    "Measured absolute pressure of inflowing fluid"
+    annotation (Placement(transformation(extent={{-60,10},{-40,30}})));
+  Modelica.Blocks.Sources.RealExpression pSteSet(y=pSat)
+    "Pressure setpoint for steam"
+    annotation (Placement(transformation(extent={{-60,40},{-40,60}})));
   Modelica.Blocks.Sources.RealExpression boiEff(y=eta) "Boiler efficiency"
     annotation (Placement(transformation(extent={{60,80},{80,100}})));
   Sensors.MassFlowRate senMasFlo(redeclare package Medium = Medium_b)
@@ -116,7 +139,6 @@ protected
   Modelica.Blocks.Sources.RealExpression HeaFloFue(y=QFue_flow)
     "Heat flow rate of fuel"
     annotation (Placement(transformation(extent={{60,60},{80,80}})));
-
 
 // Boiler
 protected
@@ -155,7 +177,7 @@ equation
   connect(senMasFlo.port_b, port_b)
     annotation (Line(points={{80,0},{100,0},{100,0}}, color={0,127,255}));
   connect(pro.u1, eva.dh)
-    annotation (Line(points={{58,56},{44,56},{44,6},{21,6}}, color={0,0,127}));
+    annotation (Line(points={{58,56},{44,56},{44,6},{41,6}}, color={0,0,127}));
   connect(senMasFlo.m_flow, pro.u2) annotation (Line(points={{70,11},{70,20},{52,
           20},{52,44},{58,44}}, color={0,0,127}));
   connect(pro.y, QOut_flow)
@@ -164,14 +186,24 @@ equation
     annotation (Line(points={{81,90},{110,90}}, color={0,0,127}));
   connect(HeaFloFue.y, QFueOut_flow)
     annotation (Line(points={{81,70},{110,70}}, color={0,0,127}));
-  connect(cheVal.port_b, volWat.ports[1])
-    annotation (Line(points={{-60,0},{-32,0}},color={0,127,255}));
-  connect(volWat.ports[2], eva.port_a)
-    annotation (Line(points={{-28,0},{0,0}},color={0,127,255}));
-  connect(eva.port_b, senMasFlo.port_a)
-    annotation (Line(points={{20,0},{60,0}}, color={0,127,255}));
-  connect(port_a, cheVal.port_a)
+  connect(port_a, pum.port_a)
     annotation (Line(points={{-100,0},{-80,0}}, color={0,127,255}));
+  connect(senPre.port, pum.port_b)
+    annotation (Line(points={{-50,10},{-50,0},{-60,0}}, color={0,127,255}));
+  connect(senPre.p, con.u_m)
+    annotation (Line(points={{-39,20},{-20,20},{-20,38}}, color={0,0,127}));
+  connect(con.u_s, pSteSet.y)
+    annotation (Line(points={{-32,50},{-39,50}}, color={0,0,127}));
+  connect(con.y, pum.y) annotation (Line(points={{-9,50},{0,50},{0,70},{-70,70},
+          {-70,12}}, color={0,0,127}));
+  connect(pum.port_b, cheVal.port_a)
+    annotation (Line(points={{-60,0},{-40,0}}, color={0,127,255}));
+  connect(cheVal.port_b, volWat.ports[1])
+    annotation (Line(points={{-20,0},{-2,0}}, color={0,127,255}));
+  connect(volWat.ports[2], eva.port_a)
+    annotation (Line(points={{2,0},{20,0}}, color={0,127,255}));
+  connect(eva.port_b, senMasFlo.port_a)
+    annotation (Line(points={{40,0},{60,0}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Text(
           extent={{-149,-124},{151,-164}},
@@ -199,4 +231,4 @@ equation
         smooth=Smooth.Bezier,
           extent={{-60,-22},{-36,2}})}), Diagram(coordinateSystem(
           preserveAspectRatio=false)));
-end SteamBoilerSimple;
+end SteamBoilerSimple2;

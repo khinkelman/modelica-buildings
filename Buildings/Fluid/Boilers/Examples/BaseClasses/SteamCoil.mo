@@ -1,16 +1,20 @@
 within Buildings.Fluid.Boilers.Examples.BaseClasses;
 model SteamCoil "Steam coil based on EnergyPlus"
   extends Buildings.Fluid.Interfaces.PartialTwoPortTwoMedium;
-  parameter Modelica.SIunits.Temperature TSat
-     "Saturation temperature";
+  parameter Modelica.SIunits.Temperature TSatHig
+     "Saturation temperature at high pressure";
   parameter Modelica.SIunits.AbsolutePressure pSat
      "Saturation pressure";
+  parameter Modelica.SIunits.Temperature TSatLow=373.15
+    "Saturation temperature at low pressure";
   parameter Modelica.SIunits.TemperatureDifference TSubCoo=5
     "Degree of subcooling at the heating coil";
   parameter Modelica.SIunits.TemperatureDifference TLooSubCoo=15
     "Degree of subcooling at loop";
-  parameter Modelica.SIunits.PressureDifference dp_nominal = 6000
-    "Nominal pressure difference";
+  parameter Modelica.SIunits.PressureDifference dpCoi_nominal=6000
+    "Nominal pressure drop in coil";
+  parameter Modelica.SIunits.PressureDifference dpSte_nominal = pSat - 101325
+    "Nominal pressure difference in steam network";
 
   // Dynamics
   parameter Modelica.SIunits.Time tau = 30
@@ -28,15 +32,16 @@ model SteamCoil "Steam coil based on EnergyPlus"
     redeclare package Medium_b = Medium_b,
     m_flow_nominal=m_flow_nominal,
     show_T=show_T,
-    TSat=TSat,
+    TSat=TSatHig,
     pSat=pSat) "Condensation process"
     annotation (Placement(transformation(extent={{-50,-10},{-30,10}})));
   HeatExchangers.SensibleCooler_T subCoo(
     redeclare package Medium = Medium_b,
     m_flow_nominal=m_flow_nominal,
     show_T=show_T,
-    dp_nominal=dp_nominal/2,
+    dp_nominal=dpCoi_nominal/2,
     tau=tau,
+    T_start=TSatLow - TSubCoo,
     energyDynamics=energyDynamics) "Subcool the condensate"
     annotation (Placement(transformation(extent={{30,-10},{50,10}})));
   Modelica.Blocks.Interfaces.RealOutput QOut_flow(
@@ -58,14 +63,18 @@ model SteamCoil "Steam coil based on EnergyPlus"
   SteamTrap steTra(
     redeclare package Medium = Medium_b,
     m_flow_nominal=m_flow_nominal,
-    show_T=show_T) "Steam trap"
+    show_T=show_T,
+    dpSet=dpSte_nominal,
+    TSatLow=TSatLow)
+                   "Steam trap"
     annotation (Placement(transformation(extent={{-80,-90},{-60,-70}})));
   HeatExchangers.SensibleCooler_T subCooLoo(
     redeclare package Medium = Medium_b,
     m_flow_nominal=m_flow_nominal,
     show_T=show_T,
-    dp_nominal=dp_nominal/2,
+    dp_nominal=dpCoi_nominal/2,
     tau=tau,
+    T_start=TSatLow - TSubCoo - TLooSubCoo,
     energyDynamics=energyDynamics) "Loop Subcooling"
     annotation (Placement(transformation(extent={{30,-90},{50,-70}})));
   Modelica.Blocks.Math.Add TOutCoi(
@@ -90,7 +99,7 @@ protected
 public
   Sensors.TemperatureTwoPort temSen(redeclare package Medium = Medium_b,
       m_flow_nominal=m_flow_nominal,
-    T_start=TSat)                    "Temperature sensor"
+    T_start=TSatLow)                 "Temperature sensor"
     annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
 protected
   Modelica.Blocks.Sources.RealExpression TLooSubCooSet(y=TLooSubCoo)
@@ -99,7 +108,7 @@ protected
 public
   Sensors.TemperatureTwoPort temSen1(redeclare package Medium = Medium_b,
       m_flow_nominal=m_flow_nominal,
-    T_start=373.15)                  "Temperature sensor"
+    T_start=TSatLow - TSubCoo)       "Temperature sensor"
     annotation (Placement(transformation(extent={{-10,-90},{10,-70}})));
   MixingVolumes.MixingVolume volWat(
     redeclare package Medium = Medium_b,

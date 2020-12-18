@@ -4,26 +4,34 @@ model SteamTrap
 
   package MediumWat = Buildings.Media.Water "Water medium";
 
-  parameter Modelica.SIunits.Temperature TSat=273.15+110
-     "Saturation temperature";
+  parameter Modelica.SIunits.Temperature TSatHig=273.15+110
+     "High pressure saturation temperature";
+  parameter Modelica.SIunits.Temperature TSatLow=273.15+100
+     "High pressure saturation temperature";
   parameter Modelica.SIunits.AbsolutePressure pSat=143380
      "Saturation pressure";
+  parameter Modelica.SIunits.PressureDifference dp=pSat-101325
+    "Prescribed pressure change";
 
   parameter Modelica.SIunits.MassFlowRate m_flow_nominal=10
     "Nominal mass flow rate";
   Buildings.Fluid.Boilers.Examples.BaseClasses.SteamTrap steTra(redeclare
       package Medium = MediumWat,
     m_flow_nominal=m_flow_nominal,
-    show_T=true)                  "Steam trap"
+    show_T=true,
+    dpSet=dp,
+    TSatLow=TSatLow)              "Steam trap"
     annotation (Placement(transformation(extent={{-40,0},{-20,20}})));
   Sources.Boundary_pT sou(
     redeclare package Medium = MediumWat,
     p=pSat,
-    T=TSat,
+    T=TSatHig,
     nPorts=1)
             "Source"
     annotation (Placement(transformation(extent={{-80,0},{-60,20}})));
-  Sources.Boundary_pT sin(redeclare package Medium = MediumWat, nPorts=1) "Sink"
+  Sources.Boundary_pT sin(redeclare package Medium = MediumWat,
+    p=pSat - dp,
+    T=TSatLow,                                                  nPorts=1) "Sink"
     annotation (Placement(transformation(extent={{60,0},{40,20}})));
   Modelica.Blocks.Sources.Ramp ram(
     height=m_flow_nominal,

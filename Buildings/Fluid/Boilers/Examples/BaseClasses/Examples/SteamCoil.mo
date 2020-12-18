@@ -14,13 +14,19 @@ model SteamCoil
   parameter Modelica.SIunits.Temperature TSte=
     MediumSte.saturationTemperature(pSte)
     "Steam temperature";
+  parameter Modelica.SIunits.Temperature TSatLow=273.15+100
+     "High pressure saturation temperature";
+  parameter Modelica.SIunits.PressureDifference dp=pSte-101325
+    "Prescribed pressure change";
   Buildings.Fluid.Boilers.Examples.BaseClasses.SteamCoil coi(
     redeclare package Medium_a = MediumSte,
     redeclare package Medium_b = MediumWat,
     m_flow_nominal=m_flow_nominal,
     show_T=true,
-    TSat=TSte,
-    pSat=pSte)                                               "Steam coil"
+    TSatHig=TSte,
+    pSat=pSte,
+    TSatLow=TSatLow,
+    dpCoi_nominal=dp)                                        "Steam coil"
     annotation (Placement(transformation(extent={{-20,0},{0,20}})));
   Sources.Boundary_pT sou(
     redeclare package Medium = MediumSte,
@@ -42,7 +48,8 @@ model SteamCoil
     nominalValuesDefineDefaultPressureCurve=true)
                                      "Pump"
     annotation (Placement(transformation(extent={{20,0},{40,20}})));
-  Sources.Boundary_pT sin(redeclare package Medium = MediumWat, nPorts=1)
+  Sources.Boundary_pT sin(redeclare package Medium = MediumWat,
+    p=pSte - dp,                                                nPorts=1)
     "Sink" annotation (Placement(transformation(extent={{80,0},{60,20}})));
 equation
   connect(sou.ports[1], coi.port_a)

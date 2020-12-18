@@ -1,14 +1,13 @@
 within Buildings.Fluid.Boilers.Examples.BaseClasses;
-model SteamTrap
-  "Steam trap with isenthalpic expansion from high to atmospheric pressure and 
+model SteamTrap2 "Steam trap with isenthalpic expansion from high to atmospheric pressure and 
   condensation of flashed steam"
   extends Buildings.Fluid.Interfaces.PartialTwoPortInterface;
 //  parameter Modelica.SIunits.AbsolutePressure pSte
 //    "Steam pressure at trap inlet";
-  parameter Modelica.SIunits.PressureDifference dpSet
-     "Setpoint change in pressure over steam trap";
-  parameter Modelica.SIunits.Temperature TSatLow=100+273.15
-    "Saturation temperature at low pressure";
+  final parameter Modelica.SIunits.AbsolutePressure pAtm=101325
+     "Atmospheric pressure discharge state";
+  final parameter Modelica.SIunits.Temperature TSat=100+273.15
+    "Saturation temperature at atmospheric pressure";
 //  final parameter Medium.SpecificEnthalpy hl=419100
 //    "Enthalpy of saturated liquid at atmospheric pressure";
   Medium.SpecificEnthalpy dh
@@ -16,8 +15,8 @@ model SteamTrap
   Modelica.Blocks.Interfaces.RealOutput QLos_flow(unit="W") "Heat transfer loss rate"
     annotation (Placement(transformation(extent={{100,60},{120,80}})));
 equation
-  // Prescribed change in pressure
-  dp = dpSet;
+  // Pressure setpoints
+  port_b.p = pAtm;
 
   // Isenthalpic process assumed: no change in enthalpy
   port_a.h_outflow = inStream(port_a.h_outflow);
@@ -25,7 +24,7 @@ equation
   // Flashed steam condenses
   port_b.h_outflow = Medium.specificEnthalpy(
     state=Medium.setState_pTX(
-      p=port_b.p,T=TSatLow,X=inStream(port_a.Xi_outflow)));
+      p=pAtm,T=TSat,X=inStream(port_a.Xi_outflow)));
   dh = port_b.h_outflow - inStream(port_a.h_outflow);
 
   // Reverse flow
@@ -58,4 +57,4 @@ equation
           fillColor={0,0,0},
           fillPattern=FillPattern.Solid)}),
                                  Diagram(coordinateSystem(preserveAspectRatio=false)));
-end SteamTrap;
+end SteamTrap2;
