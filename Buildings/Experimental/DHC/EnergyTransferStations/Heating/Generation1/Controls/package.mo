@@ -1,7 +1,7 @@
 within Buildings.Experimental.DHC.EnergyTransferStations.Heating.Generation1;
-package Controls
-  "Package of control sequences for first generation DH ETS"
+package Controls "Package of control sequences for first generation DH ETS"
   extends Modelica.Icons.VariantsPackage;
+
   annotation (
     preferredView="info",
     Documentation(
