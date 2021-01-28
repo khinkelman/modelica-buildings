@@ -82,10 +82,8 @@ model SteamBoilerSimpleClosedLoop
     redeclare package Medium_b = MediumWat,
     m_flow_nominal=m_flow_nominal,
     show_T=true,
-    TSat=TSat,
-    pSat=pSat,
-    dp_nominal=dp_nominal/2)
-               "Steam coil"
+    TSatHig=TSat,
+    pSat=pSat) "Steam coil"
     annotation (Placement(transformation(extent={{120,-50},{100,-30}})));
 
   Controls.Continuous.LimPID con(
