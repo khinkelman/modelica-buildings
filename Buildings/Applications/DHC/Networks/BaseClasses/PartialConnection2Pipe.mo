@@ -149,8 +149,8 @@ partial model PartialConnection2Pipe
     final m_flow_nominal={mDis_flow_nominal,-mDis_flow_nominal,mCon_flow_nominal})
     "Junction with connection return"
     annotation (Placement(transformation(extent={{30,-70},{10,-90}})));
-  Buildings.Fluid.Sensors.MassFlowRate senMasFloCon(
-    redeclare final package Medium=Medium,
+  Buildings.Fluid.Sensors.MassFlowRate senMasFloCon(redeclare final package
+      Medium = Medium,
     final allowFlowReversal=allowFlowReversal)
     "Connection supply mass flow rate (measured)"
     annotation (Placement(
