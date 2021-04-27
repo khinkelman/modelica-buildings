@@ -3,7 +3,7 @@ model SteamHeatExchangerIdeal
   "Model for a shell-and-tube heat exchanger with phase change in one side"
   extends Buildings.Fluid.Interfaces.PartialTwoPortTwoMedium(
     redeclare replaceable package Medium_a =
-      IBPSA.Media.Interfaces.PartialPureSubstanceWithSat);
+      Buildings.Media.Interfaces.PartialPureSubstanceWithSaturation);
 
   parameter Modelica.SIunits.MassFlowRate m_flow_nominal
     "Nominal mass flow rate"

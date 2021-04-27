@@ -3,13 +3,14 @@ model HeatingPlantIdealClosedLoop
   "Example model for the first generation heating plant"
   extends Modelica.Icons.Example;
 
-  package MediumSte = IBPSA.Media.Steam (
+  package MediumSte = Buildings.Media.Steam (
      T_default=179.91+273.15,
      p_default=1000000) "Steam medium";
-  package MediumWat = IBPSA.Media.WaterHighTemperature "Water medium";
+  package MediumWat = Buildings.Media.Water (
+    T_max=200+273.15) "Water medium";
 
   parameter Modelica.SIunits.SpecificEnthalpy dh_nominal=
-    MediumSte.enthalpyOfVaporization_sat(MediumSte.saturationState_p(pSte))
+    MediumSte.enthalpyOfVaporization(MediumSte.saturationState(pSte))
     "Nominal change in enthalpy";
 
   parameter Modelica.SIunits.MassFlowRate m_flow_nominal = Q_flow_nominal/dh_nominal
@@ -19,7 +20,7 @@ model HeatingPlantIdealClosedLoop
     "Steam pressure";
 
   parameter Modelica.SIunits.Temperature TSte=
-    MediumSte.saturationTemperature_p(pSte)
+    MediumSte.saturationTemperature(pSte)
     "Steam temperature";
 
   // Plant load

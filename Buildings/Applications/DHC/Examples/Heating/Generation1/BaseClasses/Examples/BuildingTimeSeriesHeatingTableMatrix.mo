@@ -3,11 +3,11 @@ model BuildingTimeSeriesHeatingTableMatrix
   "Example model for the 1st generation building time series model. A 1 day simulation with a table matrix heating load."
   extends Modelica.Icons.Example;
 
-  package MediumSte = IBPSA.Media.Steam "Steam medium";
-  package MediumWat = IBPSA.Media.WaterHighTemperature "Water medium";
+  package MediumSte = Buildings.Media.Steam "Steam medium";
+  package MediumWat = Buildings.Media.Water "Water medium";
 
   parameter Modelica.SIunits.SpecificEnthalpy dh_nominal=
-    MediumSte.enthalpyOfVaporization_sat(MediumSte.saturationState_p(pSte))
+    MediumSte.enthalpyOfVaporization(MediumSte.saturationState(pSte))
     "Nominal change in enthalpy";
 
   parameter Modelica.SIunits.MassFlowRate m_flow_nominal = Q_flow_nominal/dh_nominal
@@ -17,7 +17,7 @@ model BuildingTimeSeriesHeatingTableMatrix
     "Steam pressure";
 
   parameter Modelica.SIunits.Temperature TSte=
-    MediumSte.saturationTemperature_p(pSte)
+    MediumSte.saturationTemperature(pSte)
     "Steam temperature";
 
   parameter Real QHeaLoa[:, :]= [0, 200E3; 6, 200E3; 6, 50E3; 18, 50E3; 18, 75E3; 24, 75E3]

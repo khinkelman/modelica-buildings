@@ -2,7 +2,7 @@ within Buildings.Applications.DHC.EnergyTransferStations.Heating.Generation1;
 model Heating1stGenIdeal "Ideal heating energy transfer station"
   extends Buildings.Fluid.Interfaces.PartialTwoPortTwoMedium(
     redeclare replaceable package Medium_a =
-      IBPSA.Media.Interfaces.PartialPureSubstanceWithSat,
+      Buildings.Media.Interfaces.PartialPureSubstanceWithSaturation,
     show_T=true);
 
   parameter Modelica.SIunits.HeatFlowRate Q_flow_nominal(

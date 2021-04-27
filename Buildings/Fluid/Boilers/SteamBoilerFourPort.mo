@@ -23,7 +23,7 @@ model SteamBoilerFourPort
       Modelica.Media.Interfaces.PartialMedium
     "Medium model (liquid state) for port_a1 (inlet)";
   replaceable package Medium_b1 =
-      IBPSA.Media.Interfaces.PartialPureSubstanceWithSat
+      Buildings.Media.Interfaces.PartialPureSubstanceWithSaturation
     "Medium model (vapor state) for port_b1 (outlet)";
   replaceable package Medium2 =
       Modelica.Media.Interfaces.PartialMedium

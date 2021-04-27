@@ -3,11 +3,12 @@ model Heating1stGenIdeal
   "Example model for the ideal heating energy transfer station"
   extends Modelica.Icons.Example;
 
-  package MediumSte = IBPSA.Media.Steam "Steam medium";
-  package MediumWat = IBPSA.Media.WaterHighTemperature "Water medium";
+  package MediumSte = Buildings.Media.Steam "Steam medium";
+  package MediumWat = Buildings.Media.Water
+                                           "Water medium";
 
   parameter Modelica.SIunits.SpecificEnthalpy dh_nominal=
-    MediumSte.enthalpyOfVaporization_sat(MediumSte.saturationState_p(pSte))
+    MediumSte.enthalpyOfVaporization(MediumSte.saturationState(pSte))
     "Nominal change in enthalpy";
 
   parameter Modelica.SIunits.MassFlowRate m_flow_nominal = Q_flow_nominal/dh_nominal
@@ -17,7 +18,7 @@ model Heating1stGenIdeal
     "Steam pressure";
 
   parameter Modelica.SIunits.Temperature TSte=
-    MediumSte.saturationTemperature_p(pSte)
+    MediumSte.saturationTemperature(pSte)
     "Steam temperature";
 
   // Building load

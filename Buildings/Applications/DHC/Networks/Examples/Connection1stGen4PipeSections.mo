@@ -2,15 +2,15 @@ within Buildings.Applications.DHC.Networks.Examples;
 model Connection1stGen4PipeSections
   extends Modelica.Icons.Example;
 
-  package MediumSte = IBPSA.Media.Steam (
+  package MediumSte = Buildings.Media.Steam (
      T_default=179.91+273.15) "Steam medium";
-  package MediumWat = IBPSA.Media.WaterHighTemperature "Water medium";
+  package MediumWat = Buildings.Media.Water "Water medium";
 
   parameter Modelica.SIunits.AbsolutePressure pSte=1000000
     "Steam pressure";
 
   parameter Modelica.SIunits.Temperature TSte=
-    MediumSte.saturationTemperature_p(pSte)
+    MediumSte.saturationTemperature(pSte)
     "Steam temperature";
 
   parameter Modelica.SIunits.Power QBui_flow_nominal= 9000E3
@@ -22,7 +22,7 @@ model Connection1stGen4PipeSections
     //[0, 9000E3; 6, 9000E3; 6, 500E3; 18, 500E3; 18, 800E3; 24, 800E3]
 
   parameter Modelica.SIunits.SpecificEnthalpy dh_nominal=
-    MediumSte.enthalpyOfVaporization_sat(MediumSte.saturationState_p(pSte))
+    MediumSte.enthalpyOfVaporization(MediumSte.saturationState(pSte))
     "Nominal change in enthalpy";
 
   parameter Modelica.SIunits.MassFlowRate mBui_flow_nominal = QBui_flow_nominal/dh_nominal

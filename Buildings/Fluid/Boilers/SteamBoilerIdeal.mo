@@ -1,6 +1,8 @@
 within Buildings.Fluid.Boilers;
 model SteamBoilerIdeal "Simple steam boiler model for testing"
-  extends Buildings.Fluid.Interfaces.PartialTwoPortTwoMedium;
+  extends Buildings.Fluid.Interfaces.PartialTwoPortTwoMedium(
+    redeclare replaceable package Medium_b =
+      Buildings.Media.Interfaces.PartialPureSubstanceWithSaturation);
 
 /*  replaceable package Medium_a =
       IBPSA.Media.Steam.Interfaces.PartialPureSubstanceWithSat

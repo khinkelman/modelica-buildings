@@ -7,7 +7,7 @@ partial model PartialSteamBoiler
       Modelica.Media.Interfaces.PartialMedium
     "Medium model (liquid state) for port_a (inlet)";
   replaceable package Medium_b =
-      IBPSA.Media.Interfaces.PartialPureSubstanceWithSat
+      Buildings.Media.Interfaces.PartialPureSubstanceWithSaturation
     "Medium model (vapor state) for port_b (outlet)";
 
   // Advanced
@@ -56,7 +56,7 @@ partial model PartialSteamBoiler
   parameter Modelica.SIunits.AbsolutePressure pOut_nominal
     "Nominal pressure of boiler"
     annotation(Dialog(group = "Nominal condition"));
-  parameter Modelica.SIunits.Temperature TOut_nominal = Medium_b.saturationTemperature_p(pOut_nominal)
+  parameter Modelica.SIunits.Temperature TOut_nominal = Medium_b.saturationTemperature(pOut_nominal)
     "Nominal temperature leaving the boiler";
 
   // Assumptions

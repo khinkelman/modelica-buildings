@@ -2,7 +2,7 @@ within Buildings.Applications.DHC.Examples.Heating.Generation1.BaseClasses;
 model BuildingTimeSeriesHeating
 
   replaceable package Medium_a =
-      IBPSA.Media.Interfaces.PartialPureSubstanceWithSat
+      Buildings.Media.Interfaces.PartialPureSubstanceWithSaturation
     "Medium model (vapor state) for port_a (inlet)";
   replaceable package Medium_b =
       Modelica.Media.Interfaces.PartialMedium
@@ -14,7 +14,7 @@ model BuildingTimeSeriesHeating
   parameter Modelica.SIunits.AbsolutePressure pSte_nominal
     "Nominal steam pressure";
   final parameter Modelica.SIunits.SpecificEnthalpy dh_nominal=
-    Medium_a.enthalpyOfVaporization_sat(Medium_a.saturationState_p(pSte_nominal))
+    Medium_a.enthalpyOfVaporization(Medium_a.saturationState(pSte_nominal))
     "Nominal change in enthalpy";
   final parameter Modelica.SIunits.MassFlowRate m_flow_nominal=
     Q_flow_nominal/dh_nominal

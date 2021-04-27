@@ -6,10 +6,11 @@ package Generation1 "Package of example models for first generation DH systems"
     "Generic first generation district heating system"
     extends Modelica.Icons.Example;
 
-    package MediumSte = IBPSA.Media.Steam (
+    package MediumSte = Buildings.Media.Steam (
        T_default=179.91+273.15,
        p_default=1000000) "Steam medium";
-    package MediumWat = IBPSA.Media.WaterHighTemperature (
+    package MediumWat = Buildings.Media.Water (
+       T_max=200+273.15,
        T_default=179.91+273.15,
        p_default=1000000) "Water medium";
 
@@ -70,10 +71,10 @@ package Generation1 "Package of example models for first generation DH systems"
     parameter Modelica.SIunits.AbsolutePressure pSte=1000000
       "Nominal steam pressure leaving plant";
     final parameter Modelica.SIunits.Temperature TSte=
-      MediumSte.saturationTemperature_p(pSte)
+      MediumSte.saturationTemperature(pSte)
       "Nominal steam supply temperature";
     final parameter Modelica.SIunits.SpecificEnthalpy dh_nominal=
-      MediumSte.enthalpyOfVaporization_sat(MediumSte.saturationState_p(pSte))
+      MediumSte.enthalpyOfVaporization(MediumSte.saturationState(pSte))
       "Nominal change in enthalpy";
 
     // Connection mass flow rates

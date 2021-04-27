@@ -6,7 +6,7 @@ model HeatingPlantIdeal
       Modelica.Media.Interfaces.PartialMedium
     "Medium model (liquid state) for port_a (inlet)";
   replaceable package Medium_b =
-      IBPSA.Media.Interfaces.PartialPureSubstanceWithSat
+      Buildings.Media.Interfaces.PartialPureSubstanceWithSaturation
     "Medium model (vapor state) for port_b (outlet)";
 
   // Nominal Conditions
@@ -20,7 +20,7 @@ model HeatingPlantIdeal
     "Nominal pressure of boiler"
     annotation(Dialog(group = "Nominal condition"));
   final parameter Modelica.SIunits.Temperature TOut_nominal=
-    Medium_b.saturationTemperature_p(pOut_nominal)
+    Medium_b.saturationTemperature(pOut_nominal)
     "Nominal temperature of boiler";
 
   parameter Modelica.SIunits.PressureDifference dp_nominal(displayUnit="Pa")
