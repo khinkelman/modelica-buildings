@@ -15,8 +15,10 @@ model Connection1stGen2PipeSections
 
   parameter Modelica.SIunits.Power QBui_flow_nominal= 9000E3
     "Nominal heat flow rate";
-  parameter Real QBui_flow_profile[:, :]= [0, 9000E3; 1, 9000E3]
-    "Normalized time series heating load";
+  parameter Real QBui1_flow_profile[:, :]= [0, 9000E3; 6, 9000E3; 6, 500E3; 18, 500E3; 18, 800E3; 24, 800E3]
+    "Building 1 load profile ";
+  parameter Real QBui2_flow_profile[:, :]= [0, 4500E3; 6, 4500E3; 6, 9000E3; 12, 9000E3; 18, 1000E3; 24, 1000E3]
+    "Building 2 load profile ";
     //[0, 9000E3; 6, 9000E3; 6, 500E3; 18, 500E3; 18, 800E3; 24, 800E3]
 
   parameter Modelica.SIunits.SpecificEnthalpy dh_nominal=
@@ -35,69 +37,65 @@ model Connection1stGen2PipeSections
     mDis_flow_nominal=mDis_flow_nominal,
     mCon_flow_nominal=mBui_flow_nominal,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-    p_start=pSte,
-    T_start=TSte,
     nSeg=3,
     thicknessInsSup=0.01,
     thicknessInsRet=0.01,
     lambdaIns=0.04,
     lengthDisSup=1000,
-    lengthDisRet=1000)
-    annotation (Placement(transformation(extent={{0,0},{20,20}})));
-  Fluid.Sources.Boundary_pT watDisSin(redeclare package Medium = MediumWat,
+    lengthDisRet=1000,
+    p_start=pSte,
+    T_start=TSte)
+    annotation (Placement(transformation(extent={{-10,-10},{10,10}},
+        rotation=90,
+        origin={10,10})));
+  Buildings.Fluid.Sources.Boundary_pT watDisSin(redeclare package Medium = MediumWat,
       nPorts=1) "Water district sink"
-    annotation (Placement(transformation(extent={{-80,-30},{-60,-10}})));
+    annotation (Placement(transformation(extent={{-40,-70},{-20,-50}})));
+  Buildings.Applications.DHC.Examples.Heating.Generation1.BaseClasses.BuildingTimeSeriesHeating
+    bld1(
+    redeclare package Medium_a = MediumSte,
+    redeclare package Medium_b = MediumWat,
+    QHeaLoa=QBui1_flow_profile,
+    Q_flow_nominal=QBui_flow_nominal,
+    pSte_nominal=pSte,
+    timeScale=3600)    "Building"
+    annotation (Placement(transformation(extent={{-40,6},{-20,26}})));
 
-  Fluid.Sources.MassFlowSource_T steBld1Sin(
-    redeclare package Medium = MediumSte,
-    m_flow=-mBui_flow_nominal,
-    T=TSte,
-    nPorts=1) "Steam building sink"
-    annotation (Placement(transformation(extent={{-20,40},{0,60}})));
-  Fluid.Sources.MassFlowSource_T watBld1Sou(
-    redeclare package Medium = MediumWat,
-    m_flow=mBui_flow_nominal,
-    T=TSte,
-    nPorts=1) "Water building source"
-    annotation (Placement(transformation(extent={{-20,70},{0,90}})));
-  Fluid.Sources.MassFlowSource_T steBld2Sin(
-    redeclare package Medium = MediumSte,
-    m_flow=-mBui_flow_nominal,
-    T=TSte,
-    nPorts=1) "Steam building sink"
-    annotation (Placement(transformation(extent={{80,0},{60,20}})));
-  Fluid.Sources.MassFlowSource_T watBld2Sou(
-    redeclare package Medium = MediumWat,
-    m_flow=mBui_flow_nominal,
-    T=TSte,
-    nPorts=1) "Water building source"
-    annotation (Placement(transformation(extent={{80,-30},{60,-10}})));
-  Fluid.Sources.Boundary_pT steDisSou(
+  Buildings.Fluid.Sources.Boundary_pT steDisSou(
     redeclare package Medium = MediumSte,
     p=pSte,
     T=TSte,
     nPorts=1) "Steam district source"
-    annotation (Placement(transformation(extent={{-80,0},{-60,20}})));
+    annotation (Placement(transformation(extent={{-40,-40},{-20,-20}})));
+  Buildings.Applications.DHC.Examples.Heating.Generation1.BaseClasses.BuildingTimeSeriesHeating
+    bld2(
+    redeclare package Medium_a = MediumSte,
+    redeclare package Medium_b = MediumWat,
+    QHeaLoa=QBui2_flow_profile,
+    Q_flow_nominal=QBui_flow_nominal,
+    pSte_nominal=pSte,
+    timeScale=3600)    "Building"
+    annotation (Placement(transformation(extent={{-40,40},{-20,60}})));
 equation
-  connect(watDisSin.ports[1], con.port_bDisRet) annotation (Line(points={{-60,
-          -20},{-20,-20},{-20,4},{0,4}}, color={0,127,255}));
-  connect(con.port_bCon, steBld1Sin.ports[1])
-    annotation (Line(points={{10,20},{10,50},{0,50}}, color={0,127,255}));
-  connect(watBld1Sou.ports[1], con.port_aCon)
-    annotation (Line(points={{0,80},{16,80},{16,20}}, color={0,127,255}));
+  connect(watDisSin.ports[1], con.port_bDisRet) annotation (Line(points={{-20,-60},
+          {16,-60},{16,0}},              color={0,127,255}));
+  connect(con.port_bCon, bld1.port_a)
+    annotation (Line(points={{0,10},{-20,10}}, color={0,127,255}));
+  connect(bld1.port_b, con.port_aCon)
+    annotation (Line(points={{-20,16},{0,16}}, color={0,127,255}));
   connect(steDisSou.ports[1], con.port_aDisSup)
-    annotation (Line(points={{-60,10},{0,10}}, color={0,127,255}));
-  connect(con.port_bDisSup, steBld2Sin.ports[1])
-    annotation (Line(points={{20,10},{60,10}}, color={0,127,255}));
-  connect(watBld2Sou.ports[1], con.port_aDisRet) annotation (Line(points={{60,-20},
-          {40,-20},{40,4},{20,4}}, color={0,127,255}));
+    annotation (Line(points={{-20,-30},{10,-30},{10,0}}, color={0,127,255}));
+  connect(con.port_bDisSup, bld2.port_a)
+    annotation (Line(points={{10,20},{10,44},{-20,44}}, color={0,127,255}));
+  connect(con.port_aDisRet, bld2.port_b)
+    annotation (Line(points={{16,20},{16,50},{-20,50}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),
   __Dymola_Commands(file=
     "modelica://Buildings/Resources/Scripts/Dymola/Applications/DHC/Networks/Examples/Connection1stGen2PipeSections.mos"
     "Simulate and plot"),
   experiment(
-      StopTime=60,
+      StopTime=86400,
       Tolerance=1e-06,
       __Dymola_Algorithm="Cvode"));
 end Connection1stGen2PipeSections;
