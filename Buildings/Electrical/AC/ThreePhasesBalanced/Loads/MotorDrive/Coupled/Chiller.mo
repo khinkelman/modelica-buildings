@@ -63,6 +63,7 @@ model Chiller "Motor coupled chiller"
 
   //Motor parameters
   parameter Integer pole=4 "Number of pole pairs";
+  parameter Integer n=3 "Number of phases";
   parameter Modelica.Units.SI.Resistance R_s=0.641
     "Electric resistance of stator";
   parameter Modelica.Units.SI.Resistance R_r=0.332
@@ -75,45 +76,6 @@ model Chiller "Motor coupled chiller"
     "Complex component of the magnetizing reactance";
   parameter Modelica.Units.SI.Inertia JLoad(min=0)=2 "Load inertia";
   parameter Modelica.Units.SI.Inertia JMotor=2 "Motor inertia";
-  
-  //Controller parameters
-  parameter Boolean have_controller = true
-    "Set to true for enableing PID control";
-  parameter Modelica.Blocks.Types.SimpleController
-  controllerType=Modelica.Blocks.Types.SimpleController.PI
-     "Type of controller"
-      annotation (Dialog(tab="Advanced",
-                         group="Controller",
-                         enable=have_controller));
-  parameter Real k(min=0) = 1
-     "Gain of controller"
-      annotation (Dialog(tab="Advanced",
-                         group="Controller",
-                         enable=have_controller));
-  parameter Modelica.Units.SI.Time Ti(min=Modelica.Constants.small)=0.5
-     "Time constant of Integrator block"
-      annotation (Dialog(tab="Advanced",
-                         group="Controller",
-                         enable=have_controller and 
-  controllerType == Modelica.Blocks.Types.SimpleController.PI or 
-  controllerType == Modelica.Blocks.Types.SimpleController.PID));
-  parameter Modelica.Units.SI.Time Td(min=0) = 0.1
-     "Time constant of Derivative block"
-      annotation (Dialog(tab="Advanced",
-                         group="Controller",
-                         enable=have_controller and 
-  controllerType == Modelica.Blocks.Types.SimpleController.PD or 
-  controllerType == Modelica.Blocks.Types.SimpleController.PID));
-  parameter Real yMax(start=1)=1
-    "Upper limit of output"
-     annotation (Dialog(tab="Advanced",
-                       group="Controller",
-                       enable=have_controller));
-  parameter Real yMin=0
-    "Lower limit of output"
-     annotation (Dialog(tab="Advanced",
-                       group="Controller",
-                       enable=have_controller));
 
   Buildings.Electrical.AC.ThreePhasesBalanced.Loads.MotorDrive.ThermoFluid.Chiller mecChi(
     redeclare final package Medium1 = Medium1,
@@ -143,18 +105,14 @@ model Chiller "Motor coupled chiller"
     annotation (Placement(transformation(extent={{0,40},{-20,60}})));
   Buildings.Electrical.AC.ThreePhasesBalanced.Loads.MotorDrive.InductionMotors.SquirrelCageDrive simMot(
     final pole=pole,
+    final n=n,
     final J=JMotor,
     final R_s=R_s,
     final R_r=R_r,
     final X_s=X_s,
     final X_r=X_r,
     final X_m=X_m,
-    final controllerType=controllerType,
-    final k=k,
-    final Ti=Ti,
-    final Td=Td,
-    final yMax=yMax,
-    final yMin=yMin) "Motor model"
+    final VFD(reverseActing=false)) "Motor model"
     annotation (Placement(transformation(extent={{-40,70},{-20,90}})));
 
   Modelica.Blocks.Interfaces.RealInput setPoi "Set point of control target"
@@ -176,6 +134,9 @@ model Chiller "Motor coupled chiller"
     "Reactive power"
     annotation (Placement(transformation(extent={{100,-40},{120,-20}}),
     iconTransformation(extent={{100,-40}, {120,-20}})));
+
+initial equation
+  assert(QEva_flow_nominal < 0, "Parameter QEva_flow_nominal must be negative.");
 
 protected
   constant Boolean COP_is_for_cooling = true

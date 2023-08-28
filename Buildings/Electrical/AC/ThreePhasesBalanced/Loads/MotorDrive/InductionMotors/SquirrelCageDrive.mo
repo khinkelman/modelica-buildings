@@ -5,6 +5,7 @@ model SquirrelCageDrive "Squirrel cage type induction motor with electrical inte
     redeclare replaceable Interfaces.Terminal_n terminal);
 
   parameter Integer pole=4 "Number of pole pairs";
+  parameter Integer n=3 "Number of phases";
   parameter Modelica.Units.SI.Inertia J(min=0)=2
     "Moment of inertia";
   parameter Modelica.Units.SI.Resistance R_s=0.641
@@ -19,42 +20,19 @@ model SquirrelCageDrive "Squirrel cage type induction motor with electrical inte
     "Complex component of the magnetizing reactance";
   parameter Boolean have_controller = true
     "Set to true for enableing PID control";
-  parameter Modelica.Blocks.Types.SimpleController 
-  controllerType=Modelica.Blocks.Types.SimpleController.PI
-     "Type of controller"
-      annotation (Dialog(tab="Advanced", 
-                         group="Controller",
-                         enable=have_controller));
-  parameter Real k(min=0) = 1
-     "Gain of controller"
-      annotation (Dialog(tab="Advanced",
-                         group="Controller", 
-                         enable=have_controller));
-  parameter Modelica.Units.SI.Time Ti(min=Modelica.Constants.small)=0.5
-     "Time constant of Integrator block"
-      annotation (Dialog(tab="Advanced",
-                         group="Controller",
-                         enable=have_controller and 
-  controllerType == Modelica.Blocks.Types.SimpleController.PI or 
-  controllerType == Modelica.Blocks.Types.SimpleController.PID));
-  parameter Modelica.Units.SI.Time Td(min=0) = 0.1
-     "Time constant of Derivative block"
-      annotation (Dialog(tab="Advanced",
-                         group="Controller",
-                         enable=have_controller and 
-  controllerType == Modelica.Blocks.Types.SimpleController.PD or 
-  controllerType == Modelica.Blocks.Types.SimpleController.PID));
-  parameter Real yMax(start=1)=1
-    "Upper limit of output"
-     annotation (Dialog(tab="Advanced", 
-                       group="Controller", 
-                       enable=have_controller));
-  parameter Real yMin=0
-    "Lower limit of output"
-     annotation (Dialog(tab="Advanced", 
-                       group="Controller",
-                       enable=have_controller));
-  
+
+  parameter Modelica.Blocks.Types.SimpleController controllerType=Modelica.Blocks.Types.SimpleController.PID
+    "Type of controller"
+    annotation (Dialog(tab="Advanced", enable=have_controller));
+  parameter Real k=0.1 "Gain of controller"
+    annotation (Dialog(tab="Advanced", enable=have_controller));
+  parameter Modelica.Units.SI.Time Ti=60 "Time constant of Integrator block"
+    annotation (Dialog(tab="Advanced",
+                       enable=have_controller and controllerType==Modelica.Blocks.Types.SimpleController.PID or Modelica.Blocks.Types.SimpleController.PI));
+  parameter Modelica.Units.SI.Time Td=0.1 "Time constant of Derivative block";
+  parameter Real yMax=1 "Upper limit of output";
+  parameter Real yMin=0.2 "Lower limit of output";
+
   Real s(min=0,max=1) "Motor slip";
   Real v_rms "RMS voltage";
   Modelica.Units.SI.Torque tau_e
@@ -80,13 +58,13 @@ model SquirrelCageDrive "Squirrel cage type induction motor with electrical inte
   final Modelica.Blocks.Sources.RealExpression Vrms(y=v_rms) "RMS voltage"
     annotation (Placement(transformation(extent={{-80,40},{-60,60}})));
   Buildings.Controls.Continuous.LimPID VFD(
-    final controllerType=controllerType,
-    final Td=Td,
-    final yMax=yMax,
-    final yMin=yMin,
-    final k=k,
-    final Ti=Ti,
-    final reverseActing=true) if have_controller
+    controllerType=controllerType,
+    Td=Td,
+    yMax=yMax,
+    yMin=yMin,
+    k=k,
+    Ti=Ti,
+    reverseActing=true) if have_controller
     "PI controller as variable frequency drive"
     annotation (Placement(transformation(extent={{-80,-10},{-60,10}})));
   final Modelica.Blocks.Sources.RealExpression fre(y=omega/(2*Modelica.Constants.pi))
@@ -102,6 +80,7 @@ model SquirrelCageDrive "Squirrel cage type induction motor with electrical inte
   Modelica.Mechanics.Rotational.Interfaces.Flange_b shaft "Mechanical connector"
     annotation (Placement(transformation(extent={{90,-10},{110,10}})));
   Buildings.Electrical.AC.ThreePhasesBalanced.Loads.MotorDrive.InductionMotors.BaseClasses.MotorMachineInterface torSpe(
+    final n=n,
     final pole=pole,
     final R_s=R_s,
     final R_r=R_r,
@@ -109,7 +88,6 @@ model SquirrelCageDrive "Squirrel cage type induction motor with electrical inte
     final X_r=X_r,
     final X_m=X_m) "Motor machine interface"
     annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
-
   Modelica.Blocks.Math.Product VFDvol "Controlled voltage"
     annotation (Placement(transformation(extent={{-40,40},{-20,60}})));
 
@@ -150,10 +128,11 @@ model SquirrelCageDrive "Squirrel cage type induction motor with electrical inte
     annotation (Placement(transformation(extent={{100,20},{140,60}}),
         iconTransformation(extent={{100,20},{140,60}})));
 
-initial equation 
+
+initial equation
   omega_r=0;
 
-equation 
+equation
   // Assign values for motor model calculation from electrical interface
   theta_s = PhaseSystem.thetaRef(terminal.theta);
   omega = der(theta_s);
@@ -169,8 +148,8 @@ equation
   Req = R_s + R_r*s*X_m^2/(R_r^2+(s^2)*(X_r+X_m)^2);
   Xeq = X_s + X_m*(R_r^2+(s*X_r)^2+(s^2)*X_r*X_m)/(R_r^2+(s^2)*(X_r+X_m)^2);
 
-  P = if noEvent(torSpe.omega_s>0) then 3*v_rms^2*Req/(Req^2+Xeq^2) else 0;
-  Q = if noEvent(torSpe.omega_s>0) then 3*v_rms^2*Xeq/(Req^2+Xeq^2) else 0;
+  P = if noEvent(torSpe.omega_s>0) then n*v_rms^2*Req/(Req^2+Xeq^2) else 0;
+  Q = if noEvent(torSpe.omega_s>0) then n*v_rms^2*Xeq/(Req^2+Xeq^2) else 0;
 
   // Equations to calculate current
   i[1] = (v[2]*Q + v[1]*P)/(v[1]^2 + v[2]^2);
